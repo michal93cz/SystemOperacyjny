@@ -1,4 +1,4 @@
 SystemOperacyjny
 ================
 
-System operacyjny na zaliczenie
+System operacyjny na zaliczenie do Jerzego!
