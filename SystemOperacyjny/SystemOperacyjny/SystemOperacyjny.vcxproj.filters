@@ -21,9 +21,6 @@
     <ClInclude Include="drukarka.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="global.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -34,9 +31,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JOB.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MEMORY.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="message.h">
@@ -87,9 +81,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MEMORY.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="message.cpp">

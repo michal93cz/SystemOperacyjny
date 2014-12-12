@@ -78,12 +78,10 @@
   <ItemGroup>
     <ClInclude Include="czytnik.h" />
     <ClInclude Include="drukarka.h" />
-    <ClInclude Include="global.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="includers.h" />
     <ClInclude Include="interpreter.h" />
     <ClInclude Include="JOB.h" />
-    <ClInclude Include="MEMORY.h" />
     <ClInclude Include="message.h" />
     <ClInclude Include="Nadzorca.h" />
     <ClInclude Include="pamiec.h" />
@@ -102,7 +100,6 @@
     <ClCompile Include="interpreter.cpp" />
     <ClCompile Include="JOB.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MEMORY.cpp" />
     <ClCompile Include="message.cpp" />
     <ClCompile Include="Nadzorca.cpp" />
     <ClCompile Include="pamiec.cpp" />
