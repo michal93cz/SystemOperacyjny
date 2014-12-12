@@ -38,4 +38,5 @@ void ustaw_nexttry()
 			cout << "BLOCKED: " << tmp->getBlocked() << "\t STOPPED: " << tmp->getStopped() << endl << endl;
 		}
 	} while (tmp != NEXTTRY);
+	//przy uruchomieniu dwoch programow tkwi w tej petli
 }
