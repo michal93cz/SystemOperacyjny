@@ -1,8 +1,8 @@
+#include "global.h"
 #include <cstdlib>
 #include <vector>
 #include "split.h"
 #include <algorithm>
-#include <string>
 
 class Interpreter {
 public:

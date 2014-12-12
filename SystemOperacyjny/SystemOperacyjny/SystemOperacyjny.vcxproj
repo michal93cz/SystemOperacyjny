@@ -78,6 +78,7 @@
   <ItemGroup>
     <ClInclude Include="czytnik.h" />
     <ClInclude Include="drukarka.h" />
+    <ClInclude Include="global.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="includers.h" />
     <ClInclude Include="interpreter.h" />

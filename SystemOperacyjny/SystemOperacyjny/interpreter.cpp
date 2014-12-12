@@ -1,7 +1,5 @@
 #include "interpreter.h"
-#include <string>
-
-using namespace std;
+#include "string"
 
 bool czy(char i) { if (i == ':')	return true; 
 else return false;
