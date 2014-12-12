@@ -178,8 +178,8 @@ Pcb* Pcb::szukanieProcesu(char *nazwa_procesu)
 		{
 			if (wskaznikProcesu != *firstPcb)
 			{
-				string a = wskaznikProcesu->getName();
-				if (a != nazwa_procesu)
+				//string a = wskaznikProcesu->getName();
+				if (wskaznikProcesu->getName() != nazwa_procesu)
 				{
 					wskaznikProcesu = wskaznikProcesu->getNextThisGroup();
 				}
@@ -365,10 +365,6 @@ void Pcb::dolaczenieProcesu(Pcb *proces)
 	Pcb *wskaznikProcesu = firstAllPcb;
 	if (wskaznikProcesu)
 	{
-		while (wskaznikProcesu->getNextAll() != firstAllPcb)
-		{
-			wskaznikProcesu = wskaznikProcesu->getNextAll();
-		}
 		wskaznikProcesu->setNextAll(proces);
 		proces->setLastAll(wskaznikProcesu);
 		proces->setNextAll(firstAllPcb);
@@ -383,14 +379,9 @@ void Pcb::dolaczenieProcesu(Pcb *proces)
 	wskaznikProcesu = *firstPcb;
 	if (wskaznikProcesu != nullptr)
 	{
-		while (wskaznikProcesu->getNextThisGroup() != *firstPcb)
-		{
-			wskaznikProcesu = wskaznikProcesu->getNextThisGroup();
-		}
 		wskaznikProcesu->setNextThisGroup(proces);
 		proces->setLastThisGroup(wskaznikProcesu);
 		proces->setNextThisGroup(*firstPcb);
-		
 	}
 	else
 	{

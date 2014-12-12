@@ -5,8 +5,8 @@
 #include "REGISTERS.h"
 
 // __declspec(selectany) mówi kompilatorowi o deklaracji globalnej zmiennej
-__declspec(selectany) Pcb *RUNNING; 
-__declspec(selectany) Pcb *NEXTTRY;
+__declspec(selectany) Pcb *RUNNING = nullptr; 
+__declspec(selectany) Pcb *NEXTTRY = nullptr;
 __declspec(selectany) memory naszaPamiec;
 __declspec(selectany) rejestry rejestr;
 
