@@ -1,0 +1,3 @@
+$JOB 8 IN OUT
+kacz
+SET:A:10|OUT:I co teraz!|ADD:A:1|ADD:A:2|ADD:A:3|SUB:A:1|SUB:A:2|SUB:A:3|OUT:TO dzu=iaknwa!|JUMP:13|ADD:A:2|ADD:A:3|SUB:A:1|SUB:A:2|BYE
