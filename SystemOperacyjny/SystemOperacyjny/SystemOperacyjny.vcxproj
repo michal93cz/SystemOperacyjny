@@ -88,11 +88,9 @@
     <ClInclude Include="Nadzorca.h" />
     <ClInclude Include="pamiec.h" />
     <ClInclude Include="pcb.h" />
-    <ClInclude Include="PCB_class.h" />
     <ClInclude Include="Proces.h" />
     <ClInclude Include="PROCESOR.h" />
     <ClInclude Include="REGISTERS.h" />
-    <ClInclude Include="RUNNING_NEXTTRY.h" />
     <ClInclude Include="semaphore.h" />
     <ClInclude Include="split.h" />
     <ClInclude Include="XPER.h" />

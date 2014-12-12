@@ -51,9 +51,6 @@
     <ClInclude Include="pcb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PCB_class.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Proces.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -61,9 +58,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="REGISTERS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RUNNING_NEXTTRY.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="semaphore.h">
