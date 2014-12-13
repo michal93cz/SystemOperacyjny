@@ -9,8 +9,8 @@ void Nadzorca::INIT(){
 	{
 		pierwszyProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 1);
 		pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
-		/*drugiProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 1);
-		drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());*/
+		drugiProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 1);
+		drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		cout << "-------------------------------\n";
 		cout << "Utworzono procesy" << tab_sys[i]<<"\n";
 		cout << "-------------------------------\n";
@@ -58,7 +58,7 @@ void Nadzorca::CUSERPROG(){
 			Zal_JOB(pobrane);
 			
 		}
-		else if (dane == "view")
+		else if (dane == "view" || dane == "")
 		{
 			//Wyswietlenie wszystkich procesow w PCB
 			RUNNING->wydrukujWszystkieProcesy();
@@ -68,13 +68,7 @@ void Nadzorca::CUSERPROG(){
 		{
 			naszaPamiec.displayLists();
 		}
-		else if(dane == "view_on")
-		{
-			//Wyswietlenie wszystkich procesow w PCB
-			cout<<RUNNING->getName();
-
-		}
-		else if (dane == "view_on")
+		else if (dane == "view_on" || dane == "")
 		{
 			//Wyswietlenie procesu aktualnie ustawionego na RUNNING
 			cout << "Aktualny RUNNING: " << RUNNING->getName() << "\n";
@@ -82,14 +76,7 @@ void Nadzorca::CUSERPROG(){
 		}
 		else if (dane == "usun")
 		{
-			cout << "Podaj nazwe procesu: ";
-			//Pobranie nazwy procesu
-			cin >> dane;
-			if (NEXTTRY->getBlocked() == 1 || NEXTTRY->getStopped() == 1) //gdy nastepny blok nie jest w stanie gotowosci
-				RUNNING->uruchomienieProcesu("Proces_bezczynnosci");
-			RUNNING->zatrzymywanieProcesu((char*)dane.c_str());
-			zawiadowca();
-			RUNNING->usuniecieProcesu((char*)dane.c_str());
+			Usuwanie_procesow(dane);
 		}
 		else if (dane == "znajdz")
 		{
@@ -117,9 +104,9 @@ void Nadzorca::Zal_JOB(int dr_nr){
 			return;
 		}
 	}
-	else if (dr_nr == 0 || dr_nr == 2)
+	if (dr_nr == 0 || dr_nr == 2)
 	{
-		if (Tworzenie_wczytywanie_dg(pierwszyProces) == 1)
+		if (Tworzenie_wczytywanie_dg(drugiProces) == 1)
 		{
 			getchar();
 			return;
@@ -248,16 +235,13 @@ int Nadzorca::Wykonaj(Pcb*proces){
 		cout << "OUT: " << raw_param << endl;
 		break;
 	case Interpreter::OpCode::BYE:
+		abc=proces->getName();
 		cout << "\n" << "------------------------------------------------\n";
 		cout << "BYE\nKoniec procesu\nDrukowanie wynikow\n" << endl;
 		Drukowanie_komunikatow();
 		cout << "\n" << "------------------------------------------------\n";
-		cout << "BYE\nUsuwanie procesu" << endl<<proces->getName();
-		if (NEXTTRY->getBlocked() == 1 || NEXTTRY->getStopped() == 1) //gdy nastepny blok nie jest w stanie gotowosci
-			RUNNING->uruchomienieProcesu("Proces_bezczynnosci");
-		RUNNING->zatrzymywanieProcesu(proces->getName());
-		zawiadowca();
-		RUNNING->usuniecieProcesu(proces->getName());
+		cout << "BYE\nUsuwanie procesu" << endl << abc;
+		if (Usuwanie_procesow(abc) != 0) cout << "Blad";
 		cout << "BYE\Proces usuniety";
 		zawiadowca();
 		break;
@@ -302,15 +286,15 @@ void Nadzorca::FIN(){
 //Odczytanie komunikatu i pobranie dancyh z czytnika
 string* Nadzorca::Czytanie_komunikatow(string&rozkazy, int rozmiar){
 	Czyt*data = new Czyt;
-	string *message;	
-	zawiadowca();
-	if (*(RUNNING->firstPcb) == pierwszyProces){
+	string *message;
+	Pcb*wsk=*(RUNNING->firstPcb);
+	if (wsk == pierwszyProces){
 		Pcb *wskaznikNaProces = pierwszyProces->szukanieProcesu("*IN");
 		message = wskaznikNaProces->czytanieKomunikatu();
 		if (message != nullptr)
 		rozkazy = data->Czytaj(*message, true, *message);
 	}
-	if (*(RUNNING->firstPcb) == drugiProces)
+	if (wsk == drugiProces)
 	{
 		Pcb *wskaznikNaProces = drugiProces->szukanieProcesu("*IN");
 		message = wskaznikNaProces->czytanieKomunikatu();
@@ -411,5 +395,17 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 			else  cout << (char)tmp << endl;
 		}
 	}
+	return 0;
+}
+
+bool Nadzorca::Usuwanie_procesow(string dane){
+	cout << "Podaj nazwe procesu: ";
+	//Pobranie nazwy procesu
+	cin >> dane;
+	if (NEXTTRY->getBlocked() == 1 || NEXTTRY->getStopped() == 1) //gdy nastepny blok nie jest w stanie gotowosci
+		RUNNING->uruchomienieProcesu("Proces_bezczynnosci");
+	RUNNING->zatrzymywanieProcesu((char*)dane.c_str());
+	zawiadowca();
+	RUNNING->usuniecieProcesu((char*)dane.c_str());
 	return 0;
 }

@@ -165,7 +165,7 @@ int Pcb::getKwantCzasu()
 Pcb* Pcb::szukanieProcesu(char *nazwa_procesu)
 {
 	Pcb *wskaznikProcesu = *firstPcb;
-	
+
 	if (wskaznikProcesu != nullptr)
 	{
 		if (wskaznikProcesu->getName() == nazwa_procesu)
@@ -178,8 +178,8 @@ Pcb* Pcb::szukanieProcesu(char *nazwa_procesu)
 		{
 			if (wskaznikProcesu != *firstPcb)
 			{
-				//string a = wskaznikProcesu->getName();
-				if (wskaznikProcesu->getName() != nazwa_procesu)
+				string a = wskaznikProcesu->getName();
+				if (a != nazwa_procesu)
 				{
 					wskaznikProcesu = wskaznikProcesu->getNextThisGroup();
 				}
@@ -192,7 +192,7 @@ Pcb* Pcb::szukanieProcesu(char *nazwa_procesu)
 			{
 				ster = false;
 			}
-			
+
 		}
 		return wskaznikProcesu;
 	}
@@ -214,7 +214,7 @@ void Pcb::tworzenieProcesu(char *nazwa_procesu, int wielkosc_pamieci)
 		Pcb *nowyProces = new Pcb(nazwa_procesu, firstPcb);
 		nowyProces->setAutoStorageSize(wielkosc_pamieci);
 		nowyProces->setAutoStorageAdress(naszaPamiec.allocate(wielkosc_pamieci));
-		
+
 		//Do³¹czenie nowego bloku do dwóch list
 		//dolaczenieProcesu(nowyProces); - realizowane w konstruktorze Pcb
 
@@ -245,7 +245,7 @@ void Pcb::usuniecieProcesu(char *nazwa_procesu)
 
 		std::cout << endl << "Nastapilo usuniecie procesu " << nazwa_procesu << "." << endl;
 	}
-	
+
 }
 
 void Pcb::zatrzymanieProcesuPowiadomienie()
@@ -262,34 +262,34 @@ void Pcb::zatrzymanieProcesuPowiadomienie()
 	std::cout << endl << "Nastapilo zatrzymanie procesu " << this->getName() << "." << endl;
 }
 
- string* Pcb::czytanieKomunikatu()
+string* Pcb::czytanieKomunikatu()
 {
-	 //Wykonanie operacji P na semaforze MESSAGE_SEMAPHORE_RECEIVER w bloku PCB procesu i MESSAGE_SEMAPHORE_COMMON
-	 message_semaphore_receiver.P();
-	 message_semaphore_common.P();
+	//Wykonanie operacji P na semaforze MESSAGE_SEMAPHORE_RECEIVER w bloku PCB procesu i MESSAGE_SEMAPHORE_COMMON
+	message_semaphore_receiver.P();
+	message_semaphore_common.P();
 
-	 //Pobranie z listy komunikatów pierwszego komunikatu
-	 if (first_message != nullptr)
-	 {
-		 //Przeniesienie tekstu do obszaru odbiorczego
-		 string *message = new string(getFirstMessage()->text);
-		 string nadawca = getFirstMessage()->sender->getName();
-		 std::cout << this->name << "_> Odebralem: " << *message << ", od: " << nadawca << endl;
-		 Message *wskaznikNaWiadomosc = first_message;
-		 first_message = first_message->next;
+	//Pobranie z listy komunikatów pierwszego komunikatu
+	if (first_message != nullptr)
+	{
+		//Przeniesienie tekstu do obszaru odbiorczego
+		string *message = new string(getFirstMessage()->text);
+		string nadawca = getFirstMessage()->sender->getName();
+		std::cout << this->name << "_> Odebralem: " << *message << ", od: " << nadawca << endl;
+		Message *wskaznikNaWiadomosc = first_message;
+		first_message = first_message->next;
 
-		 //Zwolnienie pamiêci zajmowanej przez komunikat, wyjœcie z programu
-		 delete wskaznikNaWiadomosc;
+		//Zwolnienie pamiêci zajmowanej przez komunikat, wyjœcie z programu
+		delete wskaznikNaWiadomosc;
 
-		 return message;
-	 }
-	 else
-	 {
-		 return nullptr;
-	 }
+		return message;
+	}
+	else
+	{
+		return nullptr;
+	}
 
-	 //Odblokowanie listy
-	 message_semaphore_common.V();
+	//Odblokowanie listy
+	message_semaphore_common.V();
 }
 
 void Pcb::wysylanieKomunikatu(char *nazwa_odbiorcy, int liczba_znakow, char *tresc_komunikatu)
@@ -365,6 +365,10 @@ void Pcb::dolaczenieProcesu(Pcb *proces)
 	Pcb *wskaznikProcesu = firstAllPcb;
 	if (wskaznikProcesu)
 	{
+		while (wskaznikProcesu->getNextAll() != firstAllPcb)
+		{
+			wskaznikProcesu = wskaznikProcesu->getNextAll();
+		}
 		wskaznikProcesu->setNextAll(proces);
 		proces->setLastAll(wskaznikProcesu);
 		proces->setNextAll(firstAllPcb);
@@ -379,9 +383,14 @@ void Pcb::dolaczenieProcesu(Pcb *proces)
 	wskaznikProcesu = *firstPcb;
 	if (wskaznikProcesu != nullptr)
 	{
+		while (wskaznikProcesu->getNextThisGroup() != *firstPcb)
+		{
+			wskaznikProcesu = wskaznikProcesu->getNextThisGroup();
+		}
 		wskaznikProcesu->setNextThisGroup(proces);
 		proces->setLastThisGroup(wskaznikProcesu);
 		proces->setNextThisGroup(*firstPcb);
+
 	}
 	else
 	{
@@ -423,7 +432,7 @@ void Pcb::wydrukujWszystkieProcesy()
 	{
 		if (wskaznikProcesu != nullptr)
 		{
-			std::cout << wskaznikProcesu->getName() << " " << wskaznikProcesu->blocked << " " << wskaznikProcesu->stopped<<endl;
+			std::cout << wskaznikProcesu->getName() << " " << wskaznikProcesu->blocked << " " << wskaznikProcesu->stopped << endl;
 			std::cout << "Next: " << wskaznikProcesu->getNextAll() << endl;
 			wskaznikProcesu = wskaznikProcesu->getNextAll();
 		}

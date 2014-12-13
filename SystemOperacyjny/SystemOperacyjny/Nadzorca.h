@@ -28,6 +28,7 @@ private:
 	string*nazwap_procesu;
 	bool IBSUP_ERR();
 	bool Tworzenie_wczytywanie_dg(Pcb*wskaznik);
+	bool Usuwanie_procesow(string dane);
 public:
 	Nadzorca(){
 		tab_sys[0] = "*IN";
