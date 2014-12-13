@@ -111,4 +111,20 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="plik1.job">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="plik2.job">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="wyniki1.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="wyniki2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
 </Project>
