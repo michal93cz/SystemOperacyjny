@@ -18,7 +18,7 @@ private:
 	//zawieraz procesy systemowe i p_bezczynn
 	string tab_sys[3];
 	//ladowanie karty $JOB
-	int Zal_JOB(bool dr_nr);
+	void Zal_JOB(int dr_nr);
 	Pcb *pierwszyProces = nullptr;
 	Pcb *drugiProces = nullptr;
 	Pcb *firstGroupOne = nullptr;
@@ -27,15 +27,17 @@ private:
 	void Drukowanie_komunikatow();
 	string*nazwap_procesu;
 	bool IBSUP_ERR();
+	bool Tworzenie_wczytywanie_dg(Pcb*wskaznik);
+	bool Usuwanie_procesow(string dane);
 public:
 	Nadzorca(){
 		tab_sys[0] = "*IN";
 		tab_sys[1] = "*OUT";
 		tab_sys[2] = "Proces_bezczynnosci";
-	pierwszyProces = new Pcb("*IBSUP", &firstGroupOne);
-	RUNNING = pierwszyProces;
-	drugiProces = new Pcb("*IBSUP", &firstGroupTwo);
-	NEXTTRY = drugiProces;
+		pierwszyProces = new Pcb("*IBSUP", &firstGroupOne);
+		RUNNING = pierwszyProces;
+		drugiProces = new Pcb("*IBSUP", &firstGroupTwo);
+		NEXTTRY = drugiProces;
 	}
 	~Nadzorca(){
 		delete nazwap_procesu;

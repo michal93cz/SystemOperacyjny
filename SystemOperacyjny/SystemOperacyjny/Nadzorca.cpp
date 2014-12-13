@@ -3,15 +3,18 @@
 
 void Nadzorca::INIT(){
 	cout << "-------------------------------\n";
-	cout << "Utworzenie procesow systemowych\n";
+	cout << "Tworzenie procesow systemowych\n";
 	cout << "-------------------------------\n";
 	for (int i = 0; i < 3; i++)
 	{
 		pierwszyProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 1);
+		pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		drugiProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 1);
-		cout << "Utworzono proces" << tab_sys[i]<<"\n";
+		drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
+		cout << "-------------------------------\n";
+		cout << "Utworzono procesy" << tab_sys[i] << "\n";
+		cout << "-------------------------------\n";
 	}
-
 	cout << "Wlaczenie zawiadowcy\n";
 	zawiadowca();
 }
@@ -19,7 +22,7 @@ void Nadzorca::INIT(){
 //kod USERPROG
 void Nadzorca::CUSERPROG(){
 	string dane;
-	bool pobrane;
+	int pobrane;
 	//Gotowosc do wykonywania procesow
 	cout << "Gotowe\n";
 	while (1){
@@ -48,14 +51,14 @@ void Nadzorca::CUSERPROG(){
 		}
 		else if (dane == "load")
 		{
-			cout << "\nWybierz czytnik(1,0)\n";
-			//Wybor czytnika 0,1
+			cout << "\nWybierz czytnik(0,1,2-oba)\n";
+			//Wybor czytnika 0,1,2-0ba
 			cin >> pobrane;
 			//Pobranie karty $JOB i wpisanie jej do pamieci
-			if (Zal_JOB(pobrane) == 1) getchar();
-			
+			Zal_JOB(pobrane);
+
 		}
-		else if (dane == "view")
+		else if (dane == "view" || dane == "")
 		{
 			//Wyswietlenie wszystkich procesow w PCB
 			RUNNING->wydrukujWszystkieProcesy();
@@ -65,13 +68,7 @@ void Nadzorca::CUSERPROG(){
 		{
 			naszaPamiec.displayLists();
 		}
-		else if(dane == "view_on")
-		{
-			//Wyswietlenie wszystkich procesow w PCB
-			cout<<RUNNING->getName();
-
-		}
-		else if (dane == "view_on")
+		else if (dane == "view_on" || dane == "")
 		{
 			//Wyswietlenie procesu aktualnie ustawionego na RUNNING
 			cout << "Aktualny RUNNING: " << RUNNING->getName() << "\n";
@@ -79,14 +76,11 @@ void Nadzorca::CUSERPROG(){
 		}
 		else if (dane == "usun")
 		{
+
 			cout << "Podaj nazwe procesu: ";
 			//Pobranie nazwy procesu
 			cin >> dane;
-			if (NEXTTRY->getBlocked() == 1 || NEXTTRY->getStopped() == 1) //gdy nastepny blok nie jest w stanie gotowosci
-				RUNNING->uruchomienieProcesu("Proces_bezczynnosci");
-			RUNNING->zatrzymywanieProcesu((char*)dane.c_str());
-			zawiadowca();
-			RUNNING->usuniecieProcesu((char*)dane.c_str());
+			Usuwanie_procesow(dane);
 		}
 		else if (dane == "znajdz")
 		{
@@ -105,85 +99,25 @@ void Nadzorca::CUSERPROG(){
 }
 
 //Ladowanie karty $JOB
-int Nadzorca::Zal_JOB(bool dr_nr){
-	Czyt*data=new Czyt;
-	Interpreter interpreter;
-	Pcb*nowy;
-	nazwap_procesu = new string;
-	*nazwap_procesu = "READ";
-	string kod;
-	int rozmiar=1;
+void Nadzorca::Zal_JOB(int dr_nr){
 	//Wyslanie komunikatu i wczytanie danych z odpowiedniego czytnika
-	if (dr_nr == true){
-		Pcb*wskaznik = pierwszyProces->szukanieProcesu("*IN");
-		string tmp1 = wskaznik->getName();
-		RUNNING = *(pierwszyProces->firstPcb);
-		pierwszyProces->uruchomienieProcesu((char*)tmp1.c_str());
-		pierwszyProces->wysylanieKomunikatu("*IN", nazwap_procesu->length(), (char*)nazwap_procesu->c_str());
-		nazwap_procesu = Czytanie_komunikatow(kod, rozmiar);
-		pierwszyProces->zatrzymywanieProcesu((char*)tmp1.c_str());
-		//Utworzenie USERPROG
-		pierwszyProces->tworzenieProcesu("USERPROG",1);
-		zawiadowca();
-	}
-	else if (dr_nr == false)
-	{
-		Pcb*wskaznik = drugiProces->szukanieProcesu("*IN");
-		string tmp1 = wskaznik->getName();
-		RUNNING = *(drugiProces->firstPcb);
-		drugiProces->uruchomienieProcesu((char*)tmp1.c_str());
-		drugiProces->wysylanieKomunikatu("*IN", nazwap_procesu->length(), (char*)nazwap_procesu->c_str());
-		nazwap_procesu = Czytanie_komunikatow(kod, rozmiar);
-		drugiProces->zatrzymywanieProcesu((char*)tmp1.c_str());
-		//Utworzenie USERPROG
-		drugiProces->tworzenieProcesu("USERPROG",1);
-		zawiadowca();
-	}
-	//gdy nie ma kodu
-	interpreter.interpret_code(kod);
-	if (kod == "")
-	{
-		cout << "Nie ma programu";
-		return 1;
-	}
-	rozmiar = interpreter.total_length;
-	//Tworzenie odpowiednich procesow w odowiedniej grupie
-	if (dr_nr == 1){
-		pierwszyProces->tworzenieProcesu((char*)nazwap_procesu->c_str(), rozmiar);
-		if (IBSUP_ERR()) return 1;
-		nowy = pierwszyProces->szukanieProcesu((char*)nazwap_procesu->c_str());
-	}
-	else if (dr_nr == 0)
-	{
-		drugiProces->tworzenieProcesu((char*)nazwap_procesu->c_str(), rozmiar);
-		if (IBSUP_ERR()) return 1;
-		nowy = drugiProces->szukanieProcesu((char*)nazwap_procesu->c_str());
-	}
-	//Uruchomienie procesu
-	string a = RUNNING->getName();
-	if (a =="Proces_bezczynnosci"){
-		RUNNING->setStopped();
-		nowy->uruchomienieProcesu(nowy->getName());
-	}
-	else  nowy->uruchomienieProcesu(nowy->getName());
-	//Wpisywabnie kodu programu do pamieci
-	int j = nowy->auto_storage_adress;//adres poczatku programu
-	char tmp;//wartosc wpisywanego akurat bajta
-	for (int i = 0; (i) < rozmiar; i++){
-		tmp= interpreter.buffer[i];
-		if (!naszaPamiec.setByte(j, i, tmp)){
-			cout << "Pisanie do bajtu " << j+i << " \tnie powiodlo sie" << endl;
-			return 1;
+	if (dr_nr == 1 || dr_nr == 2){
+		if (Tworzenie_wczytywanie_dg(pierwszyProces) == 1)
+		{
+			getchar();
+			return;
 		}
-		else {
-			cout << "Pisanie do bajtu:" << j+i << " \t:";
-			if ((int)tmp<10) cout << (int)tmp << endl;
-			else  cout << (char)tmp << endl;
+	}
+	if (dr_nr == 0 || dr_nr == 2)
+	{
+		if (Tworzenie_wczytywanie_dg(drugiProces) == 1)
+		{
+			getchar();
+			return;
 		}
 	}
 	zawiadowca();
 	naszaPamiec.displayPamiec();
-	return 0;
 }
 
 //Wykonywanie rozkazow
@@ -211,13 +145,13 @@ int Nadzorca::Wykonaj(Pcb*proces){
 	case 'O':abc = "OUT"; break;
 	case 'E':abc = "BYE"; break;
 	}
-	cout << "Proces " << proces->getName() << " wykonuje rozkaz : ID = " << (char)op << " "<<abc<<endl;
-	
+	cout << "Proces " << proces->getName() << " wykonuje rozkaz : ID = " << (char)op << " " << abc << endl;
+
 	//do odczytania parametru
 	char* raw_param = NULL;
 	//wartosc parametru-int_param,len-do ustalania dl przy skokach i out, reg-nr rejestru
-	int reg1, len,int_param;
-	
+	int reg1, len, int_param;
+
 	//przelaczenie na odpowiednia operacje
 	switch (op) {
 	case Interpreter::OpCode::SET:
@@ -226,16 +160,16 @@ int Nadzorca::Wykonaj(Pcb*proces){
 	case Interpreter::OpCode::MUL:
 	case Interpreter::OpCode::DIV:
 	{
-		reg1 = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 64;
-		cout << " "; 
-		if (reg1 == 1)cout << "A";
-		else if(reg1 == 2) cout << "B";
-		else if (reg1 == 3) cout << "C";
-		else if (reg1 == 4) cout << "D";
-		
-		int_param = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) ;
-		cout << ":" << int_param << endl;
-		}
+									 reg1 = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 64;
+									 cout << " ";
+									 if (reg1 == 1)cout << "A";
+									 else if (reg1 == 2) cout << "B";
+									 else if (reg1 == 3) cout << "C";
+									 else if (reg1 == 4) cout << "D";
+
+									 int_param = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++);
+									 cout << ":" << int_param << endl;
+	}
 		break;
 	case Interpreter::OpCode::JUMP:
 	case Interpreter::OpCode::JMPZ:
@@ -244,14 +178,14 @@ int Nadzorca::Wykonaj(Pcb*proces){
 		break;
 	case Interpreter::OpCode::OUT:
 		len = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++);
-		raw_param = new char[len+1];
-		for (int i = 0; i < len+1; i++)
+		raw_param = new char[len + 1];
+		for (int i = 0; i < len + 1; i++)
 		{
 			raw_param[i] = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++);
 		}
 		//Wyslanie komunikatu z trescia do druku
 		Pcb*wskaznik = RUNNING->szukanieProcesu("*OUT");
-		string tmp1=wskaznik->getName();
+		string tmp1 = wskaznik->getName();
 		wskaznik = RUNNING;
 		RUNNING->uruchomienieProcesu((char*)tmp1.c_str());
 		string tmp = raw_param;
@@ -295,7 +229,7 @@ int Nadzorca::Wykonaj(Pcb*proces){
 	case Interpreter::OpCode::JPNZ:
 		if (rejestr.Przekaz_w_rejestru(1) != 0) {
 			proces->mem_pointer = int_param - 1;
-			cout << "JPNZ " << int_param+proces->auto_storage_adress << endl;
+			cout << "JPNZ " << int_param + proces->auto_storage_adress << endl;
 		}
 		else {
 			cout << "JPNZ " << int_param + proces->auto_storage_adress << " (zignorowany)" << endl;
@@ -305,16 +239,13 @@ int Nadzorca::Wykonaj(Pcb*proces){
 		cout << "OUT: " << raw_param << endl;
 		break;
 	case Interpreter::OpCode::BYE:
+		abc = proces->getName();
 		cout << "\n" << "------------------------------------------------\n";
 		cout << "BYE\nKoniec procesu\nDrukowanie wynikow\n" << endl;
 		Drukowanie_komunikatow();
 		cout << "\n" << "------------------------------------------------\n";
-		cout << "BYE\nUsuwanie procesu" << endl<<proces->getName();
-		if (NEXTTRY->getBlocked() == 1 || NEXTTRY->getStopped() == 1) //gdy nastepny blok nie jest w stanie gotowosci
-			RUNNING->uruchomienieProcesu("Proces_bezczynnosci");
-		RUNNING->zatrzymywanieProcesu(proces->getName());
-		zawiadowca();
-		RUNNING->usuniecieProcesu(proces->getName());
+		cout << "BYE\nUsuwanie procesu" << endl << abc;
+		if (Usuwanie_procesow(abc) != 0) cout << "Blad";
 		cout << "BYE\Proces usuniety";
 		zawiadowca();
 		break;
@@ -322,7 +253,7 @@ int Nadzorca::Wykonaj(Pcb*proces){
 		cout << "Nieprawidlowy rozkaz" << endl;
 		return 1;
 		if (raw_param){
-			delete [] raw_param;
+			delete[] raw_param;
 		}
 	}
 	return 0;
@@ -333,7 +264,7 @@ void Nadzorca::FIN(){
 	Pcb *wskaznikProcesu = RUNNING;
 	string a = wskaznikProcesu->getName();
 	do
-	{	
+	{
 		a = wskaznikProcesu->getName();
 		if (wskaznikProcesu != nullptr)
 		{
@@ -341,7 +272,7 @@ void Nadzorca::FIN(){
 			wskaznikProcesu = wskaznikProcesu->getLastAll();
 			wskaznikProcesu->usuniecieProcesu((char*)a.c_str());
 			cout << "Usunieto proces " << a << "\n";
-			
+
 		}
 	} while (1);
 
@@ -353,24 +284,27 @@ void Nadzorca::FIN(){
 		drugiProces->usuniecieProcesu((char*)tab_sys[i].c_str());
 		cout << "Usunieto proces" << tab_sys[i] << "\n";
 	}
-	RUNNING->wydrukujWszystkieProcesy();	
+	RUNNING->wydrukujWszystkieProcesy();
 }
 
 //Odczytanie komunikatu i pobranie dancyh z czytnika
 string* Nadzorca::Czytanie_komunikatow(string&rozkazy, int rozmiar){
 	Czyt*data = new Czyt;
-	string *message;	
-	zawiadowca();
-	if (*(RUNNING->firstPcb) == pierwszyProces){
+	string *message;
+	Pcb*wsk = *(RUNNING->firstPcb);
+	if (wsk == pierwszyProces){
 		Pcb *wskaznikNaProces = pierwszyProces->szukanieProcesu("*IN");
 		message = wskaznikNaProces->czytanieKomunikatu();
-		rozkazy = data->Czytaj(*message, true, *message);
+		if (message != nullptr)
+			rozkazy = data->Czytaj(*message, true, *message);
 	}
-	if (*(RUNNING->firstPcb) == drugiProces)
+	if (wsk == drugiProces)
 	{
 		Pcb *wskaznikNaProces = drugiProces->szukanieProcesu("*IN");
 		message = wskaznikNaProces->czytanieKomunikatu();
-		rozkazy = data->Czytaj(*message, false, *message);
+		if (message != nullptr)
+			rozkazy = data->Czytaj(*message, false, *message);
+
 	}
 	return message;
 }
@@ -381,9 +315,9 @@ void Nadzorca::Drukowanie_komunikatow(){
 	Pcb *wskaznikNaProces = RUNNING->szukanieProcesu("*OUT");
 	string *message = wskaznikNaProces->czytanieKomunikatu();
 	if (*(RUNNING->firstPcb) == pierwszyProces)
-	drukarka->Drukuj((char*)message->c_str(), "drukarka1","PRIN");
+		drukarka->Drukuj((char*)message->c_str(), "drukarka1", "PRIN");
 	if (*(RUNNING->firstPcb) == drugiProces)
-	drukarka->Drukuj((char*)message->c_str(), "drukarka2","PRIN");
+		drukarka->Drukuj((char*)message->c_str(), "drukarka2", "PRIN");
 }
 
 //Sprawdza czy nie ma komunikatu bledu
@@ -392,7 +326,7 @@ bool Nadzorca::IBSUP_ERR(){
 	Pcb *wskaznikNaProces = RUNNING->szukanieProcesu("*IBSUP");
 	string *message;
 	message = wskaznikNaProces->czytanieKomunikatu();
-	if (message!=nullptr){
+	if (message != nullptr){
 		if (*message == "ERR")
 		{
 			return true;
@@ -405,4 +339,74 @@ bool Nadzorca::IBSUP_ERR(){
 	else
 		return false;
 
+}
+
+bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
+{
+	Czyt*data = new Czyt;
+	Interpreter interpreter;
+	Pcb*nowy;
+	nazwap_procesu = new string;
+	*nazwap_procesu = "READ";
+	string kod;
+	int rozmiar = 1;
+	wskaznik = wskaznik->szukanieProcesu("*IN");
+	string tmp1 = wskaznik->getName();
+	RUNNING = *(wskaznik->firstPcb);
+	wskaznik->uruchomienieProcesu((char*)tmp1.c_str());
+	wskaznik->wysylanieKomunikatu("*IN", nazwap_procesu->length(), (char*)nazwap_procesu->c_str());
+	nazwap_procesu = Czytanie_komunikatow(kod, rozmiar);
+	if (nazwap_procesu == nullptr)
+	{
+		cout << "Blad";
+		return 1;
+	}
+	wskaznik->zatrzymywanieProcesu((char*)tmp1.c_str());
+	//Utworzenie USERPROG
+	wskaznik->tworzenieProcesu("USERPROG", 1);
+	zawiadowca();
+	//gdy nie ma kodu
+	interpreter.interpret_code(kod);
+	if (kod == "")
+	{
+		cout << "Nie ma programu";
+		return 1;
+	}
+	rozmiar = interpreter.total_length;
+	//Tworzenie odpowiednich procesow w odowiedniej grupie
+	wskaznik->tworzenieProcesu((char*)nazwap_procesu->c_str(), rozmiar);
+	if (IBSUP_ERR()) return 1;
+	nowy = wskaznik->szukanieProcesu((char*)nazwap_procesu->c_str());
+	//Uruchomienie procesu
+	string a = RUNNING->getName();
+	if (a == "Proces_bezczynnosci"){
+		RUNNING->setStopped();
+		nowy->uruchomienieProcesu(nowy->getName());
+	}
+	else  nowy->uruchomienieProcesu(nowy->getName());
+	//Wpisywabnie kodu programu do pamieci
+	int j = nowy->auto_storage_adress;//adres poczatku programu
+	char tmp;//wartosc wpisywanego akurat bajta
+	for (int i = 0; (i) < rozmiar; i++){
+		tmp = interpreter.buffer[i];
+		if (!naszaPamiec.setByte(j, i, tmp)){
+			cout << "Pisanie do bajtu " << j + i << " \tnie powiodlo sie" << endl;
+			return 1;
+		}
+		else {
+			cout << "Pisanie do bajtu:" << j + i << " \t:";
+			if ((int)tmp<10) cout << (int)tmp << endl;
+			else  cout << (char)tmp << endl;
+		}
+	}
+	return 0;
+}
+
+bool Nadzorca::Usuwanie_procesow(string dane){
+	if (NEXTTRY->getBlocked() == 1 || NEXTTRY->getStopped() == 1) //gdy nastepny blok nie jest w stanie gotowosci
+		RUNNING->uruchomienieProcesu("Proces_bezczynnosci");
+	RUNNING->zatrzymywanieProcesu((char*)dane.c_str());
+	zawiadowca();
+	RUNNING->usuniecieProcesu((char*)dane.c_str());
+	return 0;
 }
