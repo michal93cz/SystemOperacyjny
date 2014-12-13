@@ -29,14 +29,17 @@ private:
 	bool IBSUP_ERR();
 	bool Tworzenie_wczytywanie_dg(Pcb*wskaznik);
 	bool Usuwanie_procesow(string dane);
+	void FIN_procesu(Pcb*proces);
 public:
 	Nadzorca(){
 		tab_sys[0] = "*IN";
 		tab_sys[1] = "*OUT";
 		tab_sys[2] = "Proces_bezczynnosci";
 		pierwszyProces = new Pcb("*IBSUP", &firstGroupOne);
+		pierwszyProces->uruchomienieProcesu("*IBSUP");
 		RUNNING = pierwszyProces;
 		drugiProces = new Pcb("*IBSUP", &firstGroupTwo);
+		drugiProces->uruchomienieProcesu("*IBSUP");
 		NEXTTRY = drugiProces;
 	}
 	~Nadzorca(){

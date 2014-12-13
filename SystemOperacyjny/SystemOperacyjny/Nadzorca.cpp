@@ -8,13 +8,16 @@ void Nadzorca::INIT(){
 	for (int i = 0; i < 3; i++)
 	{
 		pierwszyProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 1);
-		pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
+		//pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		drugiProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 1);
-		drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
+		//drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		cout << "-------------------------------\n";
-		cout << "Utworzono procesy" << tab_sys[i] << "\n";
+		cout << "Utworzono procesy " << tab_sys[i] << "\n";
 		cout << "-------------------------------\n";
 	}
+	cout << "Zatrzymanie procesow IBSUP\n";
+	pierwszyProces->zatrzymywanieProcesu("*IBSUP");
+	drugiProces->zatrzymywanieProcesu("*IBSUP");
 	cout << "Wlaczenie zawiadowcy\n";
 	zawiadowca();
 }
@@ -239,15 +242,7 @@ int Nadzorca::Wykonaj(Pcb*proces){
 		cout << "OUT: " << raw_param << endl;
 		break;
 	case Interpreter::OpCode::BYE:
-		abc = proces->getName();
-		cout << "\n" << "------------------------------------------------\n";
-		cout << "BYE\nKoniec procesu\nDrukowanie wynikow\n" << endl;
-		Drukowanie_komunikatow();
-		cout << "\n" << "------------------------------------------------\n";
-		cout << "BYE\nUsuwanie procesu" << endl << abc;
-		if (Usuwanie_procesow(abc) != 0) cout << "Blad";
-		cout << "BYE\Proces usuniety";
-		zawiadowca();
+		FIN_procesu(proces);
 		break;
 	default:
 		cout << "Nieprawidlowy rozkaz" << endl;
@@ -287,6 +282,19 @@ void Nadzorca::FIN(){
 	RUNNING->wydrukujWszystkieProcesy();
 }
 
+void Nadzorca::FIN_procesu(Pcb*proces){
+	string abc = proces->getName();
+	cout << "\n" << "------------------------------------------------\n";
+	cout << "BYE\nKoniec procesu\nDrukowanie wynikow\n" << endl;
+	Drukowanie_komunikatow();
+	cout << "\n" << "------------------------------------------------\n";
+	cout << "BYE\nUsuwanie procesu" << endl << abc;
+	if (Usuwanie_procesow(abc) != 0) cout << "Blad";
+	cout << "Proces usuniety";
+	zawiadowca();
+}
+
+
 //Odczytanie komunikatu i pobranie dancyh z czytnika
 string* Nadzorca::Czytanie_komunikatow(string&rozkazy, int rozmiar){
 	Czyt*data = new Czyt;
@@ -312,12 +320,14 @@ string* Nadzorca::Czytanie_komunikatow(string&rozkazy, int rozmiar){
 //Odczytanie komunikatu i wyslanie dancyh do drukarki
 void Nadzorca::Drukowanie_komunikatow(){
 	Druk*drukarka = new Druk;
+	Pcb *wskaznikNaProces2 = RUNNING;
 	Pcb *wskaznikNaProces = RUNNING->szukanieProcesu("*OUT");
 	string *message = wskaznikNaProces->czytanieKomunikatu();
 	if (*(RUNNING->firstPcb) == pierwszyProces)
 		drukarka->Drukuj((char*)message->c_str(), "drukarka1", "PRIN");
 	if (*(RUNNING->firstPcb) == drugiProces)
 		drukarka->Drukuj((char*)message->c_str(), "drukarka2", "PRIN");
+	RUNNING = wskaznikNaProces2;
 }
 
 //Sprawdza czy nie ma komunikatu bledu
