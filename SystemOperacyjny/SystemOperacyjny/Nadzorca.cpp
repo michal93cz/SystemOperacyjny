@@ -9,13 +9,12 @@ void Nadzorca::INIT(){
 	{
 		pierwszyProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 1);
 		pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
-		drugiProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 1);
-		drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
+		/*drugiProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 1);
+		drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());*/
 		cout << "-------------------------------\n";
 		cout << "Utworzono procesy" << tab_sys[i]<<"\n";
 		cout << "-------------------------------\n";
 	}
-
 	cout << "Wlaczenie zawiadowcy\n";
 	zawiadowca();
 }
