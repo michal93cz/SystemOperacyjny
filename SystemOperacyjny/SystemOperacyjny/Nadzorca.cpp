@@ -15,10 +15,10 @@ void Nadzorca::INIT(){
 		cout << "Utworzono procesy " << tab_sys[i] << "\n";
 		cout << "-------------------------------\n";
 	}
-	cout << "Zatrzymanie procesow IBSUP\n";
+	/*cout << "Zatrzymanie procesow IBSUP\n";
 	pierwszyProces->zatrzymywanieProcesu("*IBSUP");
 	drugiProces->zatrzymywanieProcesu("*IBSUP");
-	cout << "Wlaczenie zawiadowcy\n";
+	cout << "Wlaczenie zawiadowcy\n";*/
 	zawiadowca();
 }
 
@@ -107,6 +107,7 @@ void Nadzorca::Zal_JOB(int dr_nr){
 	if (dr_nr == 1 || dr_nr == 2){
 		if (Tworzenie_wczytywanie_dg(pierwszyProces) == 1)
 		{
+			cout << "Blad";
 			getchar();
 			return;
 		}
@@ -121,6 +122,7 @@ void Nadzorca::Zal_JOB(int dr_nr){
 	}
 	zawiadowca();
 	naszaPamiec.displayPamiec();
+	getchar();
 }
 
 //Wykonywanie rozkazow
@@ -143,7 +145,7 @@ int Nadzorca::Wykonaj(Pcb*proces){
 	case 'M':abc = "MUL"; break;
 	case 'D':abc = "DIV"; break;
 	case 'J':abc = "JUMP"; break;
-	case 'P':abc = "JMPZ"; break;
+	case 'N':abc = "JMPZ"; break;
 	case 'Z':abc = "JPNZ"; break;
 	case 'O':abc = "OUT"; break;
 	case 'E':abc = "BYE"; break;
@@ -153,8 +155,8 @@ int Nadzorca::Wykonaj(Pcb*proces){
 	//do odczytania parametru
 	char* raw_param = NULL;
 	//wartosc parametru-int_param,len-do ustalania dl przy skokach i out, reg-nr rejestru
-	int reg1, len, int_param;
-
+	int reg1,reg2, len, int_param;
+	bool reg_to_reg=0;
 	//przelaczenie na odpowiednia operacje
 	switch (op) {
 	case Interpreter::OpCode::SET:
@@ -163,21 +165,52 @@ int Nadzorca::Wykonaj(Pcb*proces){
 	case Interpreter::OpCode::MUL:
 	case Interpreter::OpCode::DIV:
 	{
-									 reg1 = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 64;
-									 cout << " ";
-									 if (reg1 == 1)cout << "A";
-									 else if (reg1 == 2) cout << "B";
-									 else if (reg1 == 3) cout << "C";
-									 else if (reg1 == 4) cout << "D";
+	reg1 = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 64;
+	if (reg1<0 && reg1>4) return 1;
+	cout << " ";
+	if (reg1 == 1)cout << "A";
+	else if (reg1 == 2) cout << "B";
+	else if (reg1 == 3) cout << "C";
+	else if (reg1 == 4) cout << "D";
 
-									 int_param = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++);
-									 cout << ":" << int_param << endl;
+	if ((naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48) < 10 && (naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48)>0)
+	{
+		int_param = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 48;
+		while ((naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48) < 10 && (naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48)>0){
+			int_param = int_param * 10;
+			int_param += naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 48;
+		}
+		cout << ":" << int_param << endl;
+	}
+	else
+	{
+		cout << ":";
+		reg_to_reg = 1;
+		reg2 = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 64;
+		if (reg1 == 1)cout << "A\n";
+		else if (reg1 == 2) cout << "B\n";
+		else if (reg1 == 3) cout << "C\n";
+		else if (reg1 == 4) cout << "D\n";
+	}	
 	}
 		break;
 	case Interpreter::OpCode::JUMP:
+		int_param = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 48;
+		while ((naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48) < 10 && (naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48)>0){
+			int_param = int_param * 10;
+			int_param += naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 48;
+		}
+		cout << ":" << int_param << endl;
+		break;
 	case Interpreter::OpCode::JMPZ:
 	case Interpreter::OpCode::JPNZ:
-		int_param = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++);
+		reg2 = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 64;
+		int_param = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 48;
+		while ((naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48) < 10 && (naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48)>0){
+			int_param = int_param * 10;
+			int_param += naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 48;
+		}
+		cout << ":" << int_param << endl;
 		break;
 	case Interpreter::OpCode::OUT:
 		len = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++);
@@ -202,36 +235,41 @@ int Nadzorca::Wykonaj(Pcb*proces){
 	Pcb *wskaznikProcesu = proces;
 	switch (op) {
 	case Interpreter::OpCode::SET:
-		rejestr.Ustaw_w_rejestru(reg1, int_param);
+		if (reg_to_reg==1) rejestr.Ustaw_w_rejestru(reg1, rejestr.Przekaz_w_rejestru(reg2));
+		else rejestr.Ustaw_w_rejestru(reg1, int_param);
 		break;
 	case Interpreter::OpCode::ADD:
-		rejestr.Ustaw_w_rejestru(reg1, rejestr.Przekaz_w_rejestru(reg1) + int_param);
+		if (reg_to_reg == 1) rejestr.Ustaw_w_rejestru(reg1, rejestr.Przekaz_w_rejestru(reg2) + rejestr.Przekaz_w_rejestru(reg1));
+		else rejestr.Ustaw_w_rejestru(reg1, rejestr.Przekaz_w_rejestru(reg1) + int_param);
 		break;
 	case Interpreter::OpCode::SUB:
-		rejestr.Ustaw_w_rejestru(reg1, rejestr.Przekaz_w_rejestru(reg1) - int_param);
+		if (reg_to_reg == 1) rejestr.Ustaw_w_rejestru(reg1, rejestr.Przekaz_w_rejestru(reg2) - rejestr.Przekaz_w_rejestru(reg1));
+		else rejestr.Ustaw_w_rejestru(reg1, rejestr.Przekaz_w_rejestru(reg1) - int_param);
 		break;
 	case Interpreter::OpCode::MUL:
-		rejestr.Ustaw_w_rejestru(reg1, rejestr.Przekaz_w_rejestru(reg1) * int_param);
+		if (reg_to_reg == 1) rejestr.Ustaw_w_rejestru(reg1, rejestr.Przekaz_w_rejestru(reg2) * rejestr.Przekaz_w_rejestru(reg1));
+		else rejestr.Ustaw_w_rejestru(reg1, rejestr.Przekaz_w_rejestru(reg1) * int_param);
 		break;
 	case Interpreter::OpCode::DIV:
-		rejestr.Ustaw_w_rejestru(reg1, rejestr.Przekaz_w_rejestru(reg1) / int_param);
+		if (reg_to_reg == 1) rejestr.Ustaw_w_rejestru(reg1, rejestr.Przekaz_w_rejestru(reg2) / rejestr.Przekaz_w_rejestru(reg1));
+		else rejestr.Ustaw_w_rejestru(reg1, rejestr.Przekaz_w_rejestru(reg1) / int_param);
 		break;
 	case Interpreter::OpCode::JUMP:
 		proces->mem_pointer = int_param - 1;
 		cout << "JUMP " << int_param + proces->auto_storage_adress << endl;
 		break;
 	case Interpreter::OpCode::JMPZ:
-		if (rejestr.Przekaz_w_rejestru(1) == 0) {
+		if (rejestr.Przekaz_w_rejestru(reg2) == 0) {
 			proces->mem_pointer = int_param - 1;
 			cout << "JMPZ " << int_param + proces->auto_storage_adress << endl;
 		}
 		else {
-			cout << "JMPZ " << int_param + proces->auto_storage_adress << " (ignoring)" << endl;
+			cout << "JMPZ " << int_param + proces->auto_storage_adress << " (zignorowany)" << endl;
 		}
 		break;
 	case Interpreter::OpCode::JPNZ:
-		if (rejestr.Przekaz_w_rejestru(1) != 0) {
-			proces->mem_pointer = int_param - 1;
+		if (rejestr.Przekaz_w_rejestru(reg2) != 0) {
+			proces->mem_pointer = int_param;
 			cout << "JPNZ " << int_param + proces->auto_storage_adress << endl;
 		}
 		else {
@@ -294,7 +332,6 @@ void Nadzorca::FIN_procesu(Pcb*proces){
 	zawiadowca();
 }
 
-
 //Odczytanie komunikatu i pobranie dancyh z czytnika
 string* Nadzorca::Czytanie_komunikatow(string&rozkazy, int rozmiar){
 	Czyt*data = new Czyt;
@@ -322,6 +359,7 @@ void Nadzorca::Drukowanie_komunikatow(){
 	Druk*drukarka = new Druk;
 	Pcb *wskaznikNaProces2 = RUNNING;
 	Pcb *wskaznikNaProces = RUNNING->szukanieProcesu("*OUT");
+	if (wskaznikNaProces->message_semaphore_receiver.GET_VALUE() < 1) return;
 	string *message = wskaznikNaProces->czytanieKomunikatu();
 	if (*(RUNNING->firstPcb) == pierwszyProces)
 		drukarka->Drukuj((char*)message->c_str(), "drukarka1", "PRIN");
@@ -366,22 +404,14 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 	wskaznik->uruchomienieProcesu((char*)tmp1.c_str());
 	wskaznik->wysylanieKomunikatu("*IN", nazwap_procesu->length(), (char*)nazwap_procesu->c_str());
 	nazwap_procesu = Czytanie_komunikatow(kod, rozmiar);
-	if (nazwap_procesu == nullptr)
-	{
-		cout << "Blad";
-		return 1;
-	}
+	if (nazwap_procesu == nullptr)	return 1;
 	wskaznik->zatrzymywanieProcesu((char*)tmp1.c_str());
 	//Utworzenie USERPROG
 	wskaznik->tworzenieProcesu("USERPROG", 1);
 	zawiadowca();
 	//gdy nie ma kodu
 	interpreter.interpret_code(kod);
-	if (kod == "")
-	{
-		cout << "Nie ma programu";
-		return 1;
-	}
+	if (kod == "")	return 1;
 	rozmiar = interpreter.total_length;
 	//Tworzenie odpowiednich procesow w odowiedniej grupie
 	wskaznik->tworzenieProcesu((char*)nazwap_procesu->c_str(), rozmiar);

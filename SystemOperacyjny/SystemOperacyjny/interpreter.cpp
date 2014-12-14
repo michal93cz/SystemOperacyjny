@@ -95,12 +95,11 @@ void Interpreter::interpret_code(string blob) {
 				memcpy(buffer + c, tmp, parts[1].length() + 1);
 				c += parts[1].length() + 1;
 			}
-			else if (op == "JUMP")
+			else if (op == "JUMP" )
 			{
-				int target = atoi(parts[1].c_str())-1;
+				unsigned int target = atoi(parts[1].c_str()) - 1;
 				if (target != 0)
 				{
-					int a;
 					int tmp = 0;
 					for (int j = 0; j <target; j++)
 					{
@@ -114,17 +113,36 @@ void Interpreter::interpret_code(string blob) {
 				else
 					buffer[c++] = '0';
 			}
+			else if (op == "JMPZ" || op == "JPNZ")
+			{
+				const char* tmp = parts[1].c_str();
+				buffer[c++] = *tmp;
+				unsigned int target = atoi(parts[2].c_str()) - 1;
+				if (target != 0)
+				{
+					int tmp = 0;
+					for (int j = 0; j <target; j++)
+					{
+						if (lines[j][0] == 'O')tmp += 3;
+						if (lines[j][0] == 'J')tmp += 2;
+						else tmp += lines[j].length() - 4;
+					}
+					string b = to_string(tmp);
+					for (int i = 0; i < b.length();i++)
+					buffer[c++]=b[i];
+				}
+				else
+					buffer[c++] = '0';
+			}
 			else if (op == "BYE")
 			{
-				buffer[c++] = 'E';
-				buffer[c++] = 'N';
-				buffer[c++] = 'D';
 			}
 			else{
 				const char* tmp = parts[1].c_str();
 				buffer[c++] = *tmp;
 				tmp = parts[2].c_str();
-				buffer[c++] = atoi(tmp);
+				memccpy(c+buffer, tmp, c, parts[2].length());
+				c =c+ parts[2].length();
 			}
 		}
 	}
