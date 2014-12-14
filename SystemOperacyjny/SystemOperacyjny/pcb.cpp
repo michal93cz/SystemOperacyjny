@@ -362,16 +362,23 @@ void Pcb::bladPowiadomienie()
 
 void Pcb::dolaczenieProcesu(Pcb *proces)
 {
-	Pcb *wskaznikProcesu = firstAllPcb;
-	if (wskaznikProcesu)
+	Pcb *wskaznikProcesu;
+	if (firstAllPcb)
 	{
-		while (wskaznikProcesu->getNextAll() != firstAllPcb)
+		/*while (wskaznikProcesu->getNextAll() != firstAllPcb)
 		{
 			wskaznikProcesu = wskaznikProcesu->getNextAll();
 		}
 		wskaznikProcesu->setNextAll(proces);
 		proces->setLastAll(wskaznikProcesu);
-		proces->setNextAll(firstAllPcb);
+		proces->setNextAll(firstAllPcb);*/
+
+		wskaznikProcesu = firstAllPcb->getNextAll();
+		wskaznikProcesu->setLastAll(proces);
+		proces->setNextAll(firstAllPcb->getNextAll());
+		firstAllPcb->setNextAll(proces);
+		proces->setLastAll(firstAllPcb);
+		
 	}
 	else
 	{
@@ -380,16 +387,22 @@ void Pcb::dolaczenieProcesu(Pcb *proces)
 		proces->setLastAll(proces);
 	}
 
-	wskaznikProcesu = *firstPcb;
-	if (wskaznikProcesu != nullptr)
+	
+	if (*firstPcb)
 	{
-		while (wskaznikProcesu->getNextThisGroup() != *firstPcb)
+		/*while (wskaznikProcesu->getNextThisGroup() != *firstPcb)
 		{
 			wskaznikProcesu = wskaznikProcesu->getNextThisGroup();
 		}
 		wskaznikProcesu->setNextThisGroup(proces);
 		proces->setLastThisGroup(wskaznikProcesu);
-		proces->setNextThisGroup(*firstPcb);
+		proces->setNextThisGroup(*firstPcb);*/
+
+		wskaznikProcesu = (*firstPcb)->getNextThisGroup();
+		wskaznikProcesu->setLastThisGroup(proces);
+		proces->setNextThisGroup((*firstPcb)->getNextThisGroup());
+		(*firstPcb)->setNextThisGroup(proces);
+		proces->setLastThisGroup(*firstPcb);
 	}
 	else
 	{
