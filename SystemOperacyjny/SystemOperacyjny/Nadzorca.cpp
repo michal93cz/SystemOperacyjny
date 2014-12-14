@@ -139,7 +139,6 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 	//gdy nie ma kodu
 	interpreter.interpret_code(kod);
 	if (kod == "")	return 1;
-	rozmiar = interpreter.total_length;
 	//Tworzenie odpowiednich procesow w odowiedniej grupie
 	wskaznik->tworzenieProcesu((char*)nazwap_procesu->c_str(), rozmiar);
 	if (IBSUP_ERR()) return 1;
@@ -388,7 +387,7 @@ void Nadzorca::FIN(){
 }
 
 //Odczytanie komunikatu i pobranie dancyh z czytnika
-string* Nadzorca::Czytanie_komunikatow(string&rozkazy, int rozmiar, Pcb*wsk){
+string* Nadzorca::Czytanie_komunikatow(string&rozkazy, int&rozmiar, Pcb*wsk){
 	Czyt*data = new Czyt;
 	string *message;
 	if (RUNNING != wsk->szukanieProcesu("*IBSUP")) wsk->uruchomienieProcesu("*IBSUP");
@@ -396,14 +395,14 @@ string* Nadzorca::Czytanie_komunikatow(string&rozkazy, int rozmiar, Pcb*wsk){
 		Pcb *wskaznikNaProces = pierwszyProces->szukanieProcesu("*IN");
 		message = wskaznikNaProces->czytanieKomunikatu();
 		if (message != nullptr)
-			rozkazy = data->Czytaj(*message, true, *message);
+			rozkazy = data->Czytaj(*message, true, *message,rozmiar);
 	}
 	if (wsk == drugiProces)
 	{
 		Pcb *wskaznikNaProces = drugiProces->szukanieProcesu("*IN");
 		message = wskaznikNaProces->czytanieKomunikatu();
 		if (message != nullptr)
-			rozkazy = data->Czytaj(*message, false, *message);
+			rozkazy = data->Czytaj(*message, false, *message, rozmiar);
 
 	}
 	return message;

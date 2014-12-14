@@ -15,7 +15,7 @@ private:
 	JOB job;
 public:
 	Czyt();
-	string Czytaj(string&nazwa, bool dr_nr, string com); //funkcja czytajaca karte 
+	string Czytaj(string&nazwa, bool dr_nr, string com,int&rozmiar); //funkcja czytajaca karte 
 
 
 
