@@ -28,6 +28,7 @@ public:
 
 	void JOB_plik(string plik); //otwieranie karty z pliku
 	string getJOB();
+	int getSize();
 	string getData(); // funkcja zwracajaca dane z karty
 	string getName(); // funkcja zwracajaca nazwe
 	
