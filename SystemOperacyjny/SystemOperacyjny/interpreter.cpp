@@ -90,10 +90,18 @@ void Interpreter::interpret_code(string blob) {
 			//wpisanie kodu
 			buffer[c++] = (char)opcode;
 			if (op == temp2){
-				buffer[c++] = parts[1].length();
-				const char*tmp = parts[1].c_str();
-				memcpy(buffer + c, tmp, parts[1].length() + 1);
-				c += parts[1].length() + 1;
+				if (parts[1] == "0"){
+					const char* tmp = parts[1].c_str();
+					buffer[c++] = *tmp;
+					buffer[c++] = parts[2].length();
+					tmp = parts[2].c_str();
+					memcpy(buffer + c, tmp, parts[2].length() + 1);
+					c += parts[1].length() + 1;
+				}
+				else{
+					const char* tmp = parts[1].c_str();
+					buffer[c++] = *tmp;
+				}
 			}
 			else if (op == "JUMP" )
 			{
@@ -107,8 +115,9 @@ void Interpreter::interpret_code(string blob) {
 						if (lines[j][0] == 'J')tmp += 2;
 						else tmp += lines[j].length()-4;
 					}
-					memcpy(buffer + c, &tmp, sizeof(unsigned int));
-					c += sizeof(unsigned int);
+					string b = to_string(tmp);
+					for (int i = 0; i < b.length(); i++)
+						buffer[c++] = b[i];
 				}
 				else
 					buffer[c++] = '0';

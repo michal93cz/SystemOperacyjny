@@ -168,7 +168,8 @@ Pcb* Pcb::szukanieProcesu(char *nazwa_procesu)
 	
 	if (wskaznikProcesu != nullptr)
 	{
-		if (wskaznikProcesu->getName() == nazwa_procesu)
+		string a=wskaznikProcesu->getName();
+		if (a == nazwa_procesu)
 		{
 			return wskaznikProcesu;
 		}
@@ -178,8 +179,8 @@ Pcb* Pcb::szukanieProcesu(char *nazwa_procesu)
 		{
 			if (wskaznikProcesu != *firstPcb)
 			{
-				//string a = wskaznikProcesu->getName();
-				if (wskaznikProcesu->getName() != nazwa_procesu)
+				a = wskaznikProcesu->getName();
+				if (a != nazwa_procesu)
 				{
 					wskaznikProcesu = wskaznikProcesu->getNextThisGroup();
 				}
