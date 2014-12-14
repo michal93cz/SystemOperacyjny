@@ -21,11 +21,12 @@ void JOB::JOB_plik(string plik)
 		string buf;
 
 		cout << "Wczytywanie pliku do bufora.";
-		while(bazadanych.eof()!=1) //wczytywanie danych z karty do bufora
+		while(nrlini!=3) //wczytywanie danych z karty do bufora
 		{
 			getline(bazadanych, buf);
 			tab[nrlini]=buf;
 			nrlini++;
+
 		}
 		cout << "Wczytywanie zakonczone.";
 	}
