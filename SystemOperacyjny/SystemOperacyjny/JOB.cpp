@@ -56,3 +56,9 @@ string JOB::getJOB()
 
 }
 
+int JOB::getSize()
+{
+	vector <string> s = split(tab[0], ' ');
+	int size = atoi(s[1].c_str());
+	return size;
+}
