@@ -14,7 +14,7 @@ public:
 		MUL = 'M',
 		DIV = 'D',
 		JUMP = 'J',
-		JMPZ = 'P',
+		JMPZ = 'N',
 		JPNZ = 'Z',
 		OUT = 'O',
 		BYE = 'B',
