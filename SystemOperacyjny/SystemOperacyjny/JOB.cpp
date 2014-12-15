@@ -62,3 +62,20 @@ int JOB::getSize()
 	int size = atoi(s[1].c_str());
 	return size;
 }
+
+string JOB::sprawdzIO()
+{
+	vector <string> k = split(tab[0], ' ');
+	string procesIO;
+	if (k[2] == "IN" && k[3] == "OUT")
+	{
+		procesIO = "INOUT";
+	}
+	else if (k[2] == "IN" && k[3] == "")
+	{
+		procesIO = "IN";
+	}
+	else procesIO = "OUT";
+	
+	return procesIO;
+}

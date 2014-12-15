@@ -32,7 +32,7 @@ string Czyt::Czytaj(string&nazwa, bool dr_nr, string com,int&rozmiar)
 				}
 				else
 				{
-					//USER_SEM->P();
+					USER_SEM->P();
 					cout << "Rozpoczecie czytania:" <<endl;
 					rozkazy1 = job.getData();
 					cout << rozkazy1 << endl;
@@ -41,7 +41,7 @@ string Czyt::Czytaj(string&nazwa, bool dr_nr, string com,int&rozmiar)
 					IO = "drukarka1";
 
 				}
-				//USER_SEM->V();
+				USER_SEM->V();
 				rozkazy = rozkazy1;
 			}
 		}
@@ -68,7 +68,7 @@ string Czyt::Czytaj(string&nazwa, bool dr_nr, string com,int&rozmiar)
 					cout << "Odebrano zly komunikat";
 				}
 				else{
-				//USER_SEM->P();
+				USER_SEM->P();
 				cout << "Rozpoczecie czytania:"<<endl;
 				rozkazy2 = job.getData();
 				cout << rozkazy2 << endl;
@@ -77,7 +77,7 @@ string Czyt::Czytaj(string&nazwa, bool dr_nr, string com,int&rozmiar)
 				IO = "drukarka2";
 			}
 			}
-			//USER_SEM->V();
+			USER_SEM->V();
 			rozkazy = rozkazy2;
 		}
 	}
