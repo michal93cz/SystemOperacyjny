@@ -26,6 +26,7 @@ void Druk::Drukuj(char zapisywanie[], string IO, string com)
 				{
 					wyniki.close();
 				}
+				cout << "Drukujê";
 				wyniki.open("wyniki1.txt", ios::app | ios::ate);
 				if (wyniki.is_open())
 				{
@@ -53,6 +54,7 @@ void Druk::Drukuj(char zapisywanie[], string IO, string com)
 				{
 					wyniki.close();
 				}
+				cout << "Drukuje";
 				wyniki.open("wyniki2.txt", ios::app | ios::ate);
 				if (wyniki.is_open())
 				{
