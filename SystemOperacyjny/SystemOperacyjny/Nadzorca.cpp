@@ -7,11 +7,11 @@ void Nadzorca::INIT(){
 	cout << "-------------------------------\n";
 	for (int i = 0; i < 3; i++)
 	{
-		pierwszyProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 1);
+		pierwszyProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 0);
 		//pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		RUNNING = drugiProces;
 		NEXTTRY = pierwszyProces;
-		drugiProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 1);
+		drugiProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 0);
 		//drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		RUNNING = pierwszyProces;
 		NEXTTRY = drugiProces;

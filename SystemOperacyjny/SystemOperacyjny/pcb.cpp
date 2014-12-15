@@ -214,7 +214,14 @@ void Pcb::tworzenieProcesu(char *nazwa_procesu, int wielkosc_pamieci)
 		//Zapisanie nazwy, nadanie STOPPED wartoœci 1, BLOCKED wartoœci 0, semaforom wartoœci pocz¹tkowe, wielkoœæ pamiêci
 		Pcb *nowyProces = new Pcb(nazwa_procesu, firstPcb);
 		nowyProces->setAutoStorageSize(wielkosc_pamieci);
-		nowyProces->setAutoStorageAdress(naszaPamiec.allocate(wielkosc_pamieci));
+		if (wielkosc_pamieci != 0)
+		{
+			nowyProces->setAutoStorageAdress(naszaPamiec.allocate(wielkosc_pamieci));
+		}
+		else
+		{
+			nowyProces->setAutoStorageAdress(0);
+		}
 		
 		//Do³¹czenie nowego bloku do dwóch list
 		//dolaczenieProcesu(nowyProces); - realizowane w konstruktorze Pcb
