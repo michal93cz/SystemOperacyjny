@@ -51,6 +51,8 @@ void Interpreter::interpret_code(string blob) {
 	buffer = new char[total_length];
 	unsigned int c = 0, p = 0;
 	OpCode opcode;
+	int jmp_ON = 0;
+	vector<string>jmp_wr;
 	//wpisywanie kodu do tablicy char
 	for (vector<string>::size_type i = 0; i != lines.size(); i++) {
 		vector<string> parts = split(lines[i], ':');
@@ -96,7 +98,7 @@ void Interpreter::interpret_code(string blob) {
 					buffer[c++] = parts[2].length();
 					tmp = parts[2].c_str();
 					memcpy(buffer + c, tmp, parts[2].length() + 1);
-					c += parts[1].length() + 1;
+					c += parts[2].length() + 1;
 				}
 				else{
 					const char* tmp = parts[1].c_str();
@@ -111,9 +113,34 @@ void Interpreter::interpret_code(string blob) {
 					int tmp = 0;
 					for (int j = 0; j <target; j++)
 					{
-						if (lines[j][0] == 'O')tmp += 3;
-						if (lines[j][0] == 'J')tmp += 2;
-						else tmp += lines[j].length()-4;
+						if (lines[j][0] == 'O')
+						{
+							if (lines[j][4] != '0')tmp += 2;
+							else tmp += lines[j].length() - 3;
+						}
+						else if (lines[j][0] == 'J')
+						{
+							if (lines[j][1] == 'U'){
+								if (jmp_ON != 0)
+									tmp += jmp_wr[jmp_ON - 1].length() + 1;
+								else
+									tmp += 2;
+								jmp_ON++;
+								temp2 = to_string(tmp);
+								jmp_wr.push_back(temp2);
+							}
+							else
+							{
+								if (jmp_ON != 0)
+									tmp += jmp_wr[jmp_ON - 1].length() + 1;
+								else
+									tmp += lines[j].length() - 4;
+								jmp_ON++;
+								temp2 = to_string(tmp);
+								jmp_wr.push_back(temp2);								
+							}
+						}
+						else tmp += lines[j].length() - 4;
 					}
 					string b = to_string(tmp);
 					for (int i = 0; i < b.length(); i++)
@@ -132,13 +159,38 @@ void Interpreter::interpret_code(string blob) {
 					int tmp = 0;
 					for (int j = 0; j <target; j++)
 					{
-						if (lines[j][0] == 'O')tmp += 3;
-						if (lines[j][0] == 'J')tmp += 2;
+						if (lines[j][0] == 'O')
+						{
+							if (lines[j][4] != '0')tmp += 2;
+							else tmp += lines[j].length() - 3;
+						}
+						else if (lines[j][0] == 'J')
+						{
+							if (lines[j][1] == 'U'){
+								if (jmp_ON != 0)
+									tmp += jmp_wr[jmp_ON - 1].length() + 1;
+								else
+									tmp += 2;
+								jmp_ON++;
+								temp2 = to_string(tmp);
+								jmp_wr.push_back(temp2);
+							}
+							else
+							{
+								if (jmp_ON != 0)
+									tmp += jmp_wr[jmp_ON - 1].length() + 1;
+								else
+									tmp += lines[j].length() - 4;
+								jmp_ON++;
+								temp2 = to_string(tmp);
+								jmp_wr.push_back(temp2);
+							}
+						}
 						else tmp += lines[j].length() - 4;
 					}
 					string b = to_string(tmp);
-					for (int i = 0; i < b.length();i++)
-					buffer[c++]=b[i];
+					for (int i = 0; i < b.length(); i++)
+						buffer[c++] = b[i];
 				}
 				else
 					buffer[c++] = '0';

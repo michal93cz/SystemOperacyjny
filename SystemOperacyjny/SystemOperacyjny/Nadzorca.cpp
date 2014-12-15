@@ -5,14 +5,14 @@ void Nadzorca::INIT(){
 	cout << "-------------------------------\n";
 	cout << "Tworzenie procesow systemowych\n";
 	cout << "-------------------------------\n";
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		pierwszyProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 0);
-		//pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
+		pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		RUNNING = drugiProces;
 		NEXTTRY = pierwszyProces;
 		drugiProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 0);
-		//drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
+		drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		RUNNING = pierwszyProces;
 		NEXTTRY = drugiProces;
 		cout << "-------------------------------\n";
@@ -44,12 +44,12 @@ void Nadzorca::CUSERPROG(){
 					zawiadowca();
 				i++;
 				if ((name != "*IBSUP" && name != "Proces_bezczynnosci"
-					&& name != "*IN" && name != "*OUT") || i > 1)
+					&& name != "*IN" && name != "*OUT"||i>10))
 					break;
 
 			} while (true);
 			//Wykonanie operacji
-			Wykonaj(RUNNING);
+			if(Wykonaj(RUNNING)==0)
 			rejestr.display_reg();
 		}
 		else if (dane == "load")
@@ -97,7 +97,7 @@ void Nadzorca::CUSERPROG(){
 			Drukowanie_komunikatow();
 		}
 		else if (dane == "0") break;
-
+		
 	}
 }
 
@@ -111,6 +111,8 @@ void Nadzorca::Zal_JOB(int dr_nr){
 			getchar();
 			return;
 		}
+		else
+			naszaPamiec.displayPamiec();
 	}
 	if (dr_nr == 0 || dr_nr == 2)
 	{
@@ -120,9 +122,10 @@ void Nadzorca::Zal_JOB(int dr_nr){
 			getchar();
 			return;
 		}
+		else
+			naszaPamiec.displayPamiec();
 	}
 	zawiadowca();
-	naszaPamiec.displayPamiec();
 	getchar();
 }
 
@@ -174,7 +177,7 @@ int Nadzorca::Wykonaj(Pcb*proces){
 	int st = proces->getAutoStorageSize() + proces->auto_storage_adress;
 	if (st <= proces->mem_pointer + proces->auto_storage_adress)
 	{
-		cout << "Koniec pamieci\n"; return 0;
+		cout << "Koniec pamieci\n"; return 1;
 	}
 	//wczytanie nr operacji
 	Interpreter::OpCode op = (Interpreter::OpCode)naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++);
@@ -193,7 +196,7 @@ int Nadzorca::Wykonaj(Pcb*proces){
 	case 'O':abc = "OUT"; break;
 	case 'E':abc = "BYE"; break;
 	}
-	cout << "Proces " << proces->getName() << " wykonuje rozkaz : ID = " << (char)op << " " << abc << endl;
+	cout << "Proces " << proces->getName() << " wykonuje rozkaz = " << abc << endl;
 
 	//do odczytania parametru(test albo wartosc rejestru)
 	char* raw_param = NULL;
@@ -218,7 +221,7 @@ int Nadzorca::Wykonaj(Pcb*proces){
 	else if (reg1 == 3) cout << "C";
 	else if (reg1 == 4) cout << "D";
 
-	if ((naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48) < 10 && (naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48)>0)
+	if ((naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48) < 10 && (naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48)>-1)
 	{
 		int_param = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 48;
 		while ((naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48) < 10 && (naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48)>-1){
@@ -241,25 +244,27 @@ int Nadzorca::Wykonaj(Pcb*proces){
 		break;
 	case Interpreter::OpCode::JUMP:
 		int_param = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 48;
-		while ((naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48) < 10 && (naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48)>0){
+		while ((naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48) < 10 && (naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48)>-1){
 			int_param = int_param * 10;
 			int_param += naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 48;
 		}
-		cout << ":" << int_param+proces->auto_storage_adress << endl;
+		int_param++;
+		cout << int_param+proces->auto_storage_adress << endl;
 		break;
 	case Interpreter::OpCode::JMPZ:
 	case Interpreter::OpCode::JPNZ:
 		reg2 = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 64;
 		int_param = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 48;
-		while ((naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48) < 10 && (naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48)>0){
+		while ((naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48) < 10 && (naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) - 48)>-1){
 			int_param = int_param * 10;
 			int_param += naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 48;
 		}
-		cout << ":" << int_param << endl;
+		cout << int_param + proces->auto_storage_adress << endl;
 		break;
 	case Interpreter::OpCode::OUT:
 		if (naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer) == '0')
 		{
+			proces->mem_pointer++;
 			len = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++);
 			raw_param = new char[len + 1];
 			for (int i = 0; i < len + 1; i++)
@@ -275,16 +280,14 @@ int Nadzorca::Wykonaj(Pcb*proces){
 		Pcb*wskaznik = RUNNING->szukanieProcesu("*OUT");
 		string tmp1 = wskaznik->getName();
 		wskaznik = RUNNING;
-		RUNNING->uruchomienieProcesu((char*)tmp1.c_str());
+		//RUNNING->uruchomienieProcesu((char*)tmp1.c_str());
 		if (raw_param != NULL)
 			tmp = raw_param;
 		else
 			tmp = to_string(przekarz);
 		RUNNING->wysylanieKomunikatu("*OUT", tmp.length(), (char*)tmp.c_str());
-		RUNNING->zatrzymywanieProcesu((char*)tmp1.c_str());
-		RUNNING->uruchomienieProcesu(wskaznik->getName());
-		wskaznik->resetBlocked();
-		zawiadowca();
+		//RUNNING->zatrzymywanieProcesu((char*)tmp1.c_str());
+		//RUNNING->uruchomienieProcesu(wskaznik->getName());
 		break;
 	}
 	Pcb *wskaznikProcesu = proces;
@@ -310,12 +313,12 @@ int Nadzorca::Wykonaj(Pcb*proces){
 		else rejestr.Ustaw_w_rejestru(reg1, rejestr.Przekaz_w_rejestru(reg1) / int_param);
 		break;
 	case Interpreter::OpCode::JUMP:
-		proces->mem_pointer = int_param - 1;
+		proces->mem_pointer = int_param;
 		cout << "JUMP " << int_param + proces->auto_storage_adress << endl;
 		break;
 	case Interpreter::OpCode::JMPZ:
 		if (rejestr.Przekaz_w_rejestru(reg2) == 0) {
-			proces->mem_pointer = int_param - 1;
+			proces->mem_pointer = int_param;
 			cout << "JMPZ " << int_param + proces->auto_storage_adress << endl;
 		}
 		else {
@@ -335,6 +338,7 @@ int Nadzorca::Wykonaj(Pcb*proces){
 		cout << "OUT: " << tmp << endl;
 		break;
 	case Interpreter::OpCode::BYE:
+		cout << " BYE";
 		FIN_procesu(proces);
 		break;
 	default:
@@ -356,9 +360,9 @@ void Nadzorca::FIN_procesu(Pcb*proces){
 	cout << "\n" << "------------------------------------------------\n";
 	cout << "BYE\nUsuwanie procesu" << endl << abc;
 	if (Usuwanie_procesow(abc) != 0) cout << "Blad";
-	cout << "Proces usuniety";
-	RUNNING->zatrzymywanieProcesu("Proces_bezczynnosci");
-	RUNNING->uruchomienieProcesu("*IBSUP");
+	cout << "Proces usuniety\n";
+	//RUNNING->zatrzymywanieProcesu("Proces_bezczynnosci");
+	//RUNNING->uruchomienieProcesu("*IBSUP");
 	zawiadowca();
 }
 
@@ -394,7 +398,7 @@ void Nadzorca::FIN(){
 string* Nadzorca::Czytanie_komunikatow(string&rozkazy, int&rozmiar, Pcb*wsk){
 	Czyt*data = new Czyt;
 	string *message;
-	if (RUNNING != wsk->szukanieProcesu("*IBSUP")) wsk->uruchomienieProcesu("*IBSUP");
+	//if (RUNNING != wsk->szukanieProcesu("*IBSUP")) wsk->uruchomienieProcesu("*IBSUP");
 	if (wsk == pierwszyProces){
 		Pcb *wskaznikNaProces = pierwszyProces->szukanieProcesu("*IN");
 		message = wskaznikNaProces->czytanieKomunikatu();
@@ -417,13 +421,13 @@ void Nadzorca::Drukowanie_komunikatow(){
 	Druk*drukarka = new Druk;
 	Pcb *wskaznikNaProces = RUNNING->szukanieProcesu("*OUT");
 	if (wskaznikNaProces->message_semaphore_receiver.GET_VALUE() < 1) return;
-	RUNNING->uruchomienieProcesu("*OUT");
+	//RUNNING->uruchomienieProcesu("*OUT");
 	string *message = wskaznikNaProces->czytanieKomunikatu();
 	if (*(RUNNING->firstPcb) == pierwszyProces)
 		drukarka->Drukuj((char*)message->c_str(), "drukarka1", "PRIN");
 	if (*(RUNNING->firstPcb) == drugiProces)
 		drukarka->Drukuj((char*)message->c_str(), "drukarka2", "PRIN");
-	RUNNING->zatrzymywanieProcesu("*OUT");
+	//RUNNING->zatrzymywanieProcesu("*OUT");
 }
 
 //Sprawdza czy nie ma komunikatu bledu
@@ -448,8 +452,6 @@ bool Nadzorca::IBSUP_ERR(){
 }
 
 bool Nadzorca::Usuwanie_procesow(string dane){
-	if (NEXTTRY->getBlocked() == 1 || NEXTTRY->getStopped() == 1) //gdy nastepny blok nie jest w stanie gotowosci
-		RUNNING->uruchomienieProcesu("Proces_bezczynnosci");
 	RUNNING->zatrzymywanieProcesu((char*)dane.c_str());
 	zawiadowca();
 	RUNNING->usuniecieProcesu((char*)dane.c_str());
