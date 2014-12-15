@@ -168,7 +168,8 @@ Pcb* Pcb::szukanieProcesu(char *nazwa_procesu)
 	
 	if (wskaznikProcesu != nullptr)
 	{
-		if (wskaznikProcesu->getName() == nazwa_procesu)
+		string a=wskaznikProcesu->getName();
+		if (a == nazwa_procesu)
 		{
 			return wskaznikProcesu;
 		}
@@ -178,8 +179,8 @@ Pcb* Pcb::szukanieProcesu(char *nazwa_procesu)
 		{
 			if (wskaznikProcesu != *firstPcb)
 			{
-				//string a = wskaznikProcesu->getName();
-				if (wskaznikProcesu->getName() != nazwa_procesu)
+				a = wskaznikProcesu->getName();
+				if (a != nazwa_procesu)
 				{
 					wskaznikProcesu = wskaznikProcesu->getNextThisGroup();
 				}
@@ -213,7 +214,14 @@ void Pcb::tworzenieProcesu(char *nazwa_procesu, int wielkosc_pamieci)
 		//Zapisanie nazwy, nadanie STOPPED wartoœci 1, BLOCKED wartoœci 0, semaforom wartoœci pocz¹tkowe, wielkoœæ pamiêci
 		Pcb *nowyProces = new Pcb(nazwa_procesu, firstPcb);
 		nowyProces->setAutoStorageSize(wielkosc_pamieci);
-		nowyProces->setAutoStorageAdress(naszaPamiec.allocate(wielkosc_pamieci));
+		if (wielkosc_pamieci != 0)
+		{
+			nowyProces->setAutoStorageAdress(naszaPamiec.allocate(wielkosc_pamieci));
+		}
+		else
+		{
+			nowyProces->setAutoStorageAdress(0);
+		}
 		
 		//Do³¹czenie nowego bloku do dwóch list
 		//dolaczenieProcesu(nowyProces); - realizowane w konstruktorze Pcb
@@ -373,12 +381,15 @@ void Pcb::dolaczenieProcesu(Pcb *proces)
 		proces->setLastAll(wskaznikProcesu);
 		proces->setNextAll(firstAllPcb);*/
 
-		wskaznikProcesu = firstAllPcb->getNextAll();
-		wskaznikProcesu->setLastAll(proces);
-		proces->setNextAll(firstAllPcb->getNextAll());
-		firstAllPcb->setNextAll(proces);
-		proces->setLastAll(firstAllPcb);
-		
+		if (RUNNING)
+		{
+			wskaznikProcesu = RUNNING->getNextAll();
+			wskaznikProcesu->setLastAll(proces);
+			proces->setNextAll(wskaznikProcesu);
+			RUNNING->setNextAll(proces);
+			proces->setLastAll(RUNNING);
+		}
+
 	}
 	else
 	{
