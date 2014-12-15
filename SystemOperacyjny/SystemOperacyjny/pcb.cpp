@@ -374,12 +374,15 @@ void Pcb::dolaczenieProcesu(Pcb *proces)
 		proces->setLastAll(wskaznikProcesu);
 		proces->setNextAll(firstAllPcb);*/
 
-		wskaznikProcesu = firstAllPcb->getNextAll();
-		wskaznikProcesu->setLastAll(proces);
-		proces->setNextAll(firstAllPcb->getNextAll());
-		firstAllPcb->setNextAll(proces);
-		proces->setLastAll(firstAllPcb);
-		
+		if (RUNNING)
+		{
+			wskaznikProcesu = RUNNING->getNextAll();
+			wskaznikProcesu->setLastAll(proces);
+			proces->setNextAll(wskaznikProcesu);
+			RUNNING->setNextAll(proces);
+			proces->setLastAll(RUNNING);
+		}
+
 	}
 	else
 	{
