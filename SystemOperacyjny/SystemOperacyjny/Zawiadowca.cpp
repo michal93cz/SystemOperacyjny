@@ -24,7 +24,8 @@ void ustaw_nexttry()
 { 
 	Pcb *tmp = RUNNING;
 	do{
-
+		/*if (NEXTTRY == nullptr) 
+			NEXTTRY = RUNNING->getNextAll();*/
 		if (NEXTTRY->getStopped() != 0 || NEXTTRY->getBlocked() != 0)
 			NEXTTRY = NEXTTRY->getNextAll();
 		else

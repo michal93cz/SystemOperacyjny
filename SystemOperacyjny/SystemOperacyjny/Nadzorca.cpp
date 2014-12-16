@@ -474,6 +474,7 @@ bool Nadzorca::Usuwanie_procesow(string dane){
 	nazwa_in->append("_IN");
 	nazwa_out->append(dane);
 	nazwa_out->append("_OUT");
+	if (RUNNING == RUNNING->szukanieProcesu((char*)dane.c_str())) RUNNING = RUNNING->szukanieProcesu("*IBSUP");
 	RUNNING->usuniecieProcesu((char*)dane.c_str());
 	cout << "-------------------------------\n";
 	RUNNING->usuniecieProcesu((char*)nazwa_in->c_str());

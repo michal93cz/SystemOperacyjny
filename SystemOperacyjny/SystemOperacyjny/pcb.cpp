@@ -242,6 +242,7 @@ void Pcb::usuniecieProcesu(char *nazwa_procesu)
 	zatrzymywanieProcesu(nazwa_procesu);
 	Pcb *proces = szukanieProcesu(nazwa_procesu);
 
+	if (NEXTTRY = RUNNING->szukanieProcesu(nazwa_procesu))NEXTTRY = RUNNING;
 	if (proces != *firstPcb)
 	{
 		//Od³¹czenie bloku PCB od obydwu ³añcuchów
