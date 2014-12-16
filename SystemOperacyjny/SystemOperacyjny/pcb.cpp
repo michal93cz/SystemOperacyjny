@@ -451,13 +451,14 @@ void Pcb::wydrukujWszystkieProcesy()
 	std::cout << endl << "Wskaznik na pierwszy proces: " << firstAllPcb << endl;
 	std::cout << "Przegladanie calej grupy procesow:" << endl;
 	Pcb *wskaznikProcesu = firstAllPcb;
-	do
+	if (wskaznikProcesu != nullptr)
 	{
-		if (wskaznikProcesu != nullptr)
+		do
 		{
-			std::cout << wskaznikProcesu->getName() << " " << wskaznikProcesu->blocked << " " << wskaznikProcesu->stopped<<endl;
+			std::cout << wskaznikProcesu->getName() << " " << wskaznikProcesu->blocked << " " << wskaznikProcesu->stopped << endl;
 			std::cout << "Next: " << wskaznikProcesu->getNextAll() << endl;
 			wskaznikProcesu = wskaznikProcesu->getNextAll();
-		}
-	} while (wskaznikProcesu != firstAllPcb);
+
+		} while (wskaznikProcesu != firstAllPcb);
+	}
 }
