@@ -10,7 +10,7 @@ void zawiadowca()
 	{
 		if (NEXTTRY->getStopped() == 0)
 		{
-			cout << "zmiana bloków PCB w zawiadowcy" << endl;
+			cout << "zmiana blokow PCB w zawiadowcy z " << RUNNING->getName() << " na " << NEXTTRY->getName() << endl;
 			RUNNING->MEMORY_SAVE_AREA = rejestr;
 			RUNNING = NEXTTRY;
 			NEXTTRY = NEXTTRY->getNextAll();
@@ -24,8 +24,6 @@ void ustaw_nexttry()
 { 
 	Pcb *tmp = RUNNING;
 	do{
-		/*if (NEXTTRY == nullptr) 
-			NEXTTRY = RUNNING->getNextAll();*/
 		if (NEXTTRY->getStopped() != 0 || NEXTTRY->getBlocked() != 0)
 			NEXTTRY = NEXTTRY->getNextAll();
 		else
@@ -39,5 +37,4 @@ void ustaw_nexttry()
 			cout << "BLOCKED: " << tmp->getBlocked() << "\t STOPPED: " << tmp->getStopped() << endl << endl;
 		}
 	} while (tmp != NEXTTRY);
-	//przy uruchomieniu dwoch programow tkwi w tej petli
 }

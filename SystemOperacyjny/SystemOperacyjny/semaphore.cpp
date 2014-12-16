@@ -8,6 +8,7 @@ void SEMAPHORE::umiesc_na_koncu() //umieszczenie blocku PCB z running na koncu k
 {
 	kolejka.push(RUNNING);
 	std::cout << "dodano do kolejki: " << RUNNING->getName() << std::endl;
+	cout << "Ilosc procesow pod semaforem: " << kolejka.size() << endl;
 }
 void block(SEMAPHORE *sem)
 {
