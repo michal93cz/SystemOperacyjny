@@ -276,7 +276,7 @@ void Pcb::zatrzymanieProcesuPowiadomienie()
 {
 	 //Wykonanie operacji P na semaforze MESSAGE_SEMAPHORE_RECEIVER w bloku PCB procesu i MESSAGE_SEMAPHORE_COMMON
 	 message_semaphore_receiver.P();
-	 message_semaphore_common.P();
+	 //message_semaphore_common.P();
 
 	 //Pobranie z listy komunikatów pierwszego komunikatu
 	 if (first_message != nullptr)
@@ -299,7 +299,7 @@ void Pcb::zatrzymanieProcesuPowiadomienie()
 	 }
 
 	 //Odblokowanie listy
-	 message_semaphore_common.V();
+	// message_semaphore_common.V();
 }
 
 void Pcb::wysylanieKomunikatu(char *nazwa_odbiorcy, int liczba_znakow, char *tresc_komunikatu)
@@ -314,13 +314,13 @@ void Pcb::wysylanieKomunikatu(char *nazwa_odbiorcy, int liczba_znakow, char *tre
 		Message *nowyKomunikat = new Message(this, liczba_znakow, tresc_komunikatu);
 
 		//Wykonanie operacji P na semaforze MESSAGE_SEMAPHORE_COMMON w bloku PCB procesu odbiorcy
-		wskaznikProcesu->message_semaphore_common.P();
+		//wskaznikProcesu->message_semaphore_common.P();
 
 		//Umieszczenie bloku na koñcu listy komunikatów
 		nowyKomunikat->umieszczenieNaKoncu(wskaznikProcesu);
 
 		//Wykonanie operacji V na semaforach MESSAGE_SEMAPHORE_COMMON i MESSAGE_SEMAPHORE_RECEIVER
-		wskaznikProcesu->message_semaphore_common.V();
+		//wskaznikProcesu->message_semaphore_common.V();
 		wskaznikProcesu->message_semaphore_receiver.V();
 
 		std::cout << endl << "Nastapilo wyslanie komunikatu do " << nazwa_odbiorcy << "." << endl;

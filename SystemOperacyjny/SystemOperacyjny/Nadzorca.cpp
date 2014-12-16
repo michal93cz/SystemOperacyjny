@@ -150,6 +150,7 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 	nazwap_procesu = Czytanie_komunikatow(kod, rozmiar, wskaznik);
 	if (nazwap_procesu == nullptr)	return 1;
 	//Utworzenie USERPROG
+	if (wskaznik->szukanieProcesu("USERPROG")==wskaznik)
 	wskaznik->tworzenieProcesu("USERPROG", 0);
 	//gdy nie ma kodu
 	interpreter.interpret_code(kod);
@@ -368,10 +369,14 @@ int Nadzorca::Wykonaj(Pcb*proces){
 }
 
 void Nadzorca::FIN_procesu(Pcb*proces){
+	Pcb*proces2;
 	string abc = proces->getName();
-	proces->zatrzymywanieProcesu((char*)abc.c_str());
+	/*proces->zatrzymywanieProcesu((char*)abc.c_str());*/
 	cout << "\n" << "------------------------------------------------\n";
 	cout << "BYE\nKoniec procesu\nDrukowanie wynikow\n" << endl;
+	proces2=proces->szukanieProcesu("*OUT");
+	int licz=proces2->message_semaphore_receiver.GET_VALUE();
+	for (int i = 0; i < licz;i++)
 	Drukowanie_komunikatow();
 	cout << "\n" << "------------------------------------------------\n";
 	cout << "BYE\nUsuwanie procesu" << endl << abc;
@@ -437,13 +442,13 @@ void Nadzorca::Drukowanie_komunikatow(){
 	Druk*drukarka = new Druk;
 	Pcb *wskaznikNaProces = RUNNING->szukanieProcesu("*OUT");
 	if (wskaznikNaProces->message_semaphore_receiver.GET_VALUE() < 1) return;
-	//RUNNING->uruchomienieProcesu("*OUT");
+	Pcb *wskaznikNaProces2=RUNNING;
 	string *message = wskaznikNaProces->czytanieKomunikatu();
 	if (*(RUNNING->firstPcb) == pierwszyProces)
 		drukarka->Drukuj((char*)message->c_str(), "drukarka1", "PRIN");
 	if (*(RUNNING->firstPcb) == drugiProces)
 		drukarka->Drukuj((char*)message->c_str(), "drukarka2", "PRIN");
-	//RUNNING->zatrzymywanieProcesu("*OUT");
+	RUNNING = wskaznikNaProces2;
 }
 
 //Sprawdza czy nie ma komunikatu bledu
