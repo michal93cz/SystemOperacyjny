@@ -211,6 +211,7 @@ void Pcb::tworzenieProcesu(char *nazwa_procesu, int wielkosc_pamieci)
 	//Jeœli unikalna przydzielenie odpowiedniego obszaru dla nowego bloku PCB
 	if (wskaznikProcesu == *firstPcb)
 	{
+		std::cout << endl << "Utworzenie procesu " << nazwa_procesu << "." << endl;
 		//Zapisanie nazwy, nadanie STOPPED wartoœci 1, BLOCKED wartoœci 0, semaforom wartoœci pocz¹tkowe, wielkoœæ pamiêci
 		Pcb *nowyProces = new Pcb(nazwa_procesu, firstPcb);
 		nowyProces->setAutoStorageSize(wielkosc_pamieci);
@@ -226,7 +227,7 @@ void Pcb::tworzenieProcesu(char *nazwa_procesu, int wielkosc_pamieci)
 		//Do³¹czenie nowego bloku do dwóch list
 		//dolaczenieProcesu(nowyProces); - realizowane w konstruktorze Pcb
 
-		std::cout << endl << "Nastapilo utworzenie procesu " << nazwa_procesu << "." << endl;
+		
 	}
 	else
 	{
