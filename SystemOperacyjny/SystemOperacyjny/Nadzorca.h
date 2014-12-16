@@ -30,6 +30,7 @@ private:
 	bool Tworzenie_wczytywanie_dg(Pcb*wskaznik);
 	bool Usuwanie_procesow(string dane);
 	void FIN_procesu(Pcb*proces);
+	void Przekazywanie_komunikatow(char*proces);
 	string*nazwa_in;
 	string*nazwa_out;
 public:
@@ -46,6 +47,8 @@ public:
 	}
 	~Nadzorca(){
 		delete nazwap_procesu;
+		delete nazwa_in;
+		delete nazwa_out;
 		delete pierwszyProces;
 		delete drugiProces;
 	}
