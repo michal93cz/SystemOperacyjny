@@ -468,8 +468,17 @@ bool Nadzorca::IBSUP_ERR(){
 }
 
 bool Nadzorca::Usuwanie_procesow(string dane){
-	RUNNING->zatrzymywanieProcesu((char*)dane.c_str());
-	zawiadowca();
+	nazwa_in = new string;
+	nazwa_out = new string;
+	nazwa_in->append(dane);
+	nazwa_in->append("_IN");
+	nazwa_out->append(dane);
+	nazwa_out->append("_OUT");
 	RUNNING->usuniecieProcesu((char*)dane.c_str());
+	cout << "-------------------------------\n";
+	RUNNING->usuniecieProcesu((char*)nazwa_in->c_str());
+	cout << "-------------------------------\n";
+	RUNNING->usuniecieProcesu((char*)nazwa_out->c_str());
+	cout << "-------------------------------\n";
 	return 0;
 }

@@ -246,7 +246,7 @@ void Pcb::usuniecieProcesu(char *nazwa_procesu)
 	{
 		//Od³¹czenie bloku PCB od obydwu ³añcuchów
 		odlaczenieProcesu(proces);
-
+		if (proces->auto_storage_adress!=0)
 		//Wywo³anie programu XF w celu zwolnienia wszystkich komunikatów czekaj¹cych, pamiêci roboczej procesu oraz zajmowanej przez blok PCB
 		naszaPamiec.release(proces->auto_storage_adress);
 		usuniecieKomunikatow();
