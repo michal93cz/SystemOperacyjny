@@ -249,7 +249,7 @@ void Pcb::usuniecieProcesu(char *nazwa_procesu)
 
 		//Wywo³anie programu XF w celu zwolnienia wszystkich komunikatów czekaj¹cych, pamiêci roboczej procesu oraz zajmowanej przez blok PCB
 		naszaPamiec.release(proces->auto_storage_adress);
-		usuniecieKomunikatow();
+		proces->usuniecieKomunikatow();
 		delete proces;
 
 		std::cout << endl << "Nastapilo usuniecie procesu " << nazwa_procesu << "." << endl;
