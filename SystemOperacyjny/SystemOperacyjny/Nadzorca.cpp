@@ -40,11 +40,15 @@ void Nadzorca::CUSERPROG(){
 				//Ustawienie odpowiedniej wartosci RUNNING
 				string name = RUNNING->getName();
 				if (name == "*IBSUP" || name == "Proces_bezczynnosci"
-					|| name == "*IN" || name == "*OUT")
+					|| name == "*IN" || name == "*OUT" 
+					|| name.find("_OUT", 0) != string::npos 
+					|| name.find("_IN", 0) != string::npos
+					|| name == "USERPROG")
 					zawiadowca();
 				i++;
 				if ((name != "*IBSUP" && name != "Proces_bezczynnosci"
-					&& name != "*IN" && name != "*OUT"||i>10))
+					&& name != "*IN" && name != "*OUT" && name != "USERPROG" 
+					&&name.find("_OUT", 0) != string::npos&& name.find("_IN", 0) != string::npos) || i>10)
 					break;
 
 			} while (true);
@@ -54,9 +58,10 @@ void Nadzorca::CUSERPROG(){
 		}
 		else if (dane == "load")
 		{
-			cout << "\nWybierz czytnik(0,1,2-oba)\n";
-			//Wybor czytnika 0,1,2-0ba
-			cin >> pobrane;
+			//cout << "\nWybierz czytnik(0,1,2-oba)\n";
+			////Wybor czytnika 0,1,2-0ba
+			//cin >> pobrane;
+			pobrane = 2;
 			//Pobranie karty $JOB i wpisanie jej do pamieci
 			Zal_JOB(pobrane);
 
@@ -97,7 +102,6 @@ void Nadzorca::CUSERPROG(){
 			Drukowanie_komunikatow();
 		}
 		else if (dane == "0") break;
-		
 	}
 }
 
@@ -131,10 +135,14 @@ void Nadzorca::Zal_JOB(int dr_nr){
 
 bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 {
+	BLK = &(RUNNING->stopped);
+	STP = &(RUNNING->blocked);
 	Czyt*data = new Czyt;
 	Interpreter interpreter;
 	Pcb*nowy;
 	nazwap_procesu = new string;
+	nazwa_in = new string;
+	nazwa_out = new string;
 	*nazwap_procesu = "READ";
 	string kod;
 	int rozmiar = 1;
@@ -142,18 +150,22 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 	nazwap_procesu = Czytanie_komunikatow(kod, rozmiar, wskaznik);
 	if (nazwap_procesu == nullptr)	return 1;
 	//Utworzenie USERPROG
-	wskaznik->tworzenieProcesu("USERPROG", 1);
+	wskaznik->tworzenieProcesu("USERPROG", 0);
 	//gdy nie ma kodu
 	interpreter.interpret_code(kod);
 	if (kod == "")	return 1;
 	//Tworzenie odpowiednich procesow w odowiedniej grupie
 	wskaznik->tworzenieProcesu((char*)nazwap_procesu->c_str(), rozmiar);
 	if (IBSUP_ERR()) return 1;
-	string nazwa_in;
-	string nazwa_out;
-	wskaznik->tworzenieProcesu((char*)nazwap_procesu->c_str(), 0);
+	nazwa_in->append(*nazwap_procesu);
+	nazwa_in->append("_IN");
+	nazwa_out->append(*nazwap_procesu);
+	nazwa_out->append("_OUT");
+	wskaznik->tworzenieProcesu((char*)nazwa_in->c_str(), 0);
 	if (IBSUP_ERR()) return 1;
-	wskaznik->zatrzymywanieProcesu(wskaznik->getName());
+	wskaznik->tworzenieProcesu((char*)nazwa_out->c_str(), 0);
+	if (IBSUP_ERR()) return 1;
+	//wskaznik->zatrzymywanieProcesu(wskaznik->getName());
 	nowy = wskaznik->szukanieProcesu((char*)nazwap_procesu->c_str());
 	//Wpisywabnie kodu programu do pamieci
 	int j = nowy->auto_storage_adress;//adres poczatku programu
@@ -170,7 +182,10 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 			else  cout << (char)tmp << endl;
 		}
 	}
-	//Uruchomienie procesu
+	//Uruchomienie procesów
+	nowy->uruchomienieProcesu("USERPROG");
+	nowy->uruchomienieProcesu((char*)nazwa_in->c_str());
+	nowy->uruchomienieProcesu((char*)nazwa_out->c_str());
 	nowy->uruchomienieProcesu(nowy->getName());
 	return 0;
 }
@@ -441,7 +456,7 @@ bool Nadzorca::IBSUP_ERR(){
 	string *message;
 	message = wskaznikNaProces->czytanieKomunikatu();
 	if (message != nullptr){
-		if (*message == "ERR")
+		if (*message == "Wystapil blad")
 		{
 			return true;
 		}

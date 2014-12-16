@@ -13,7 +13,7 @@ void block(SEMAPHORE *sem)
 {
 	if (RUNNING->getBlocked() != 1) //nie mozna dodac prcesu do kolejki 2 razy, jezeli byl juz wczesniej zablokowany
 	{
-		RUNNING->setBlocked(); //zablokowanie procesu
+		//RUNNING->setBlocked(); //zablokowanie procesu
 		sem->umiesc_na_koncu();
 	}
 }

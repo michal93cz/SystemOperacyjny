@@ -19,13 +19,14 @@ class Pcb
 	Pcb *last_pcb_this_group;
 	Pcb *next_pcb_all;
 	Pcb *last_pcb_all;
-	bool stopped;
-	bool blocked;
+	
 	Message *first_message;
 	int auto_storage_size;
 	int kwantCzasu;
 
 public:
+	bool stopped;
+	bool blocked;
 	int mem_pointer = 0;
 	int auto_storage_adress;
 	Pcb(char *,Pcb **);

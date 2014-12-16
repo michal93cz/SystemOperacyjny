@@ -30,6 +30,8 @@ private:
 	bool Tworzenie_wczytywanie_dg(Pcb*wskaznik);
 	bool Usuwanie_procesow(string dane);
 	void FIN_procesu(Pcb*proces);
+	string*nazwa_in;
+	string*nazwa_out;
 public:
 	Nadzorca(){
 		tab_sys[0] = "*IN";
