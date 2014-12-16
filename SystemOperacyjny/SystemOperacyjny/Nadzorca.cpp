@@ -183,9 +183,6 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 		}
 	}
 	//Uruchomienie procesów
-	nowy->uruchomienieProcesu("USERPROG");
-	nowy->uruchomienieProcesu((char*)nazwa_in->c_str());
-	nowy->uruchomienieProcesu((char*)nazwa_out->c_str());
 	nowy->uruchomienieProcesu(nowy->getName());
 	return 0;
 }
