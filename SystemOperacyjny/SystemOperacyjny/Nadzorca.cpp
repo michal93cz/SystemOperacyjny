@@ -8,11 +8,11 @@ void Nadzorca::INIT(){
 	for (int i = 0; i < 2; i++)
 	{
 		pierwszyProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 0);
-		pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
+		//pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		RUNNING = drugiProces;
 		NEXTTRY = pierwszyProces;
 		drugiProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 0);
-		drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
+		//drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		RUNNING = pierwszyProces;
 		NEXTTRY = drugiProces;
 		cout << "-------------------------------\n";
@@ -149,6 +149,10 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 	//Tworzenie odpowiednich procesow w odowiedniej grupie
 	wskaznik->tworzenieProcesu((char*)nazwap_procesu->c_str(), rozmiar);
 	if (IBSUP_ERR()) return 1;
+	string nazwa_in;
+	string nazwa_out;
+	wskaznik->tworzenieProcesu((char*)nazwap_procesu->c_str(), 0);
+	if (IBSUP_ERR()) return 1;
 	wskaznik->zatrzymywanieProcesu(wskaznik->getName());
 	nowy = wskaznik->szukanieProcesu((char*)nazwap_procesu->c_str());
 	//Wpisywabnie kodu programu do pamieci
@@ -235,10 +239,10 @@ int Nadzorca::Wykonaj(Pcb*proces){
 		cout << ":";
 		reg_to_reg = 1;
 		reg2 = naszaPamiec.getByte(proces->auto_storage_adress, proces->mem_pointer++) - 64;
-		if (reg1 == 1)cout << "A\n";
-		else if (reg1 == 2) cout << "B\n";
-		else if (reg1 == 3) cout << "C\n";
-		else if (reg1 == 4) cout << "D\n";
+		if (reg2 == 1)cout << "A\n";
+		else if (reg2 == 2) cout << "B\n";
+		else if (reg2 == 3) cout << "C\n";
+		else if (reg2 == 4) cout << "D\n";
 	}	
 	}
 		break;
