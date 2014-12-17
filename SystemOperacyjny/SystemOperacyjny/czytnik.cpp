@@ -8,7 +8,6 @@ Czyt::Czyt()
 string Czyt::Czytaj(string&nazwa, bool dr_nr, string com,int&rozmiar)
 {
 	JOB job;
-	string IO;
 	string rozkazy;
 	string buf;
 	vector <string> tmp;
@@ -38,7 +37,7 @@ string Czyt::Czytaj(string&nazwa, bool dr_nr, string com,int&rozmiar)
 					cout << rozkazy1 << endl;
 					nazwa = job.getName();
 					rozmiar = job.getSize();
-					IO = "drukarka1";
+					
 
 				}
 				USER_SEM->V();
@@ -74,7 +73,7 @@ string Czyt::Czytaj(string&nazwa, bool dr_nr, string com,int&rozmiar)
 				cout << rozkazy2 << endl;
 				nazwa = job.getName();
 				rozmiar = job.getSize();
-				IO = "drukarka2";
+				
 			}
 			}
 			USER_SEM->V();
