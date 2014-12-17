@@ -135,8 +135,6 @@ void Nadzorca::Zal_JOB(int dr_nr){
 
 bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 {
-	BLK = &(RUNNING->stopped);
-	STP = &(RUNNING->blocked);
 	Czyt*data = new Czyt;
 	Interpreter interpreter;
 	Pcb*nowy;
@@ -145,11 +143,16 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 	nazwa_out = new string;
 	*nazwap_procesu = "READ";
 	string kod;
-	int z_in_out;
+	int z_in_out=0;
 	int rozmiar = 1;
 	wskaznik->wysylanieKomunikatu("*IN", nazwap_procesu->length(), (char*)nazwap_procesu->c_str());
 	nazwap_procesu = Czytanie_karty(kod, rozmiar, wskaznik,z_in_out);
 	if (nazwap_procesu == nullptr)	return 1;
+	if (z_in_out == 3) {
+		wskaznik->wysylanieKomunikatu("*OUT", kod.length(), (char*)kod.c_str());
+		Drukowanie_komunikatow();
+		return 0;
+	}
 	//Utworzenie USERPROG
 	if (wskaznik->szukanieProcesu("USERPROG")==wskaznik)
 	wskaznik->tworzenieProcesu("USERPROG", 0);
@@ -159,6 +162,12 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 	//Tworzenie odpowiednich procesow w odowiedniej grupie
 	wskaznik->tworzenieProcesu((char*)nazwap_procesu->c_str(), rozmiar);
 	if (IBSUP_ERR()) return 1;
+	if (z_in_out == 2){
+		wskaznik->wysylanieKomunikatu((char*)nazwap_procesu->c_str(), 7, "Czytaj");
+	}
+	if (z_in_out == 1){
+		wskaznik->wysylanieKomunikatu((char*)nazwap_procesu->c_str(), 7, "D_C");
+	}
 	nazwa_in->append(*nazwap_procesu);
 	nazwa_in->append("_IN");
 	nazwa_out->append(*nazwap_procesu);
@@ -378,19 +387,23 @@ int Nadzorca::Wykonaj(Pcb*proces){
 void Nadzorca::FIN_procesu(Pcb*proces){
 	Pcb*proces2;
 	string abc = proces->getName();
-	/*proces->zatrzymywanieProcesu((char*)abc.c_str());*/
+	string*message=new string;
+	message->append("D_C");
 	cout << "\n" << "------------------------------------------------\n";
-	cout << "BYE\nKoniec procesu\nDrukowanie wynikow\n" << endl;
-	proces2=proces->szukanieProcesu("*OUT");
-	int licz=proces2->message_semaphore_receiver.GET_VALUE();
-	for (int i = 0; i < licz;i++)
-	Drukowanie_komunikatow();
+	cout << "BYE\nKoniec procesu\n";
+	string*tma=proces->czytanieKomunikatu();
+	if (*tma == *message){
+		cout << "Drukowanie komunikatow\n";
+		proces2 = proces->szukanieProcesu("*OUT");
+		int licz = proces2->message_semaphore_receiver.GET_VALUE();
+		for (int i = 0; i < licz; i++)
+			Drukowanie_komunikatow();
+	}
 	cout << "\n" << "------------------------------------------------\n";
 	cout << "BYE\nUsuwanie procesu" << endl << abc;
 	if (Usuwanie_procesow(abc) != 0) cout << "Blad";
 	cout << "Proces usuniety\n";
-	//RUNNING->zatrzymywanieProcesu("Proces_bezczynnosci");
-	//RUNNING->uruchomienieProcesu("*IBSUP");
+	delete message;
 	zawiadowca();
 }
 
@@ -423,7 +436,7 @@ void Nadzorca::FIN(){
 }
 
 //Odczytanie komunikatu i pobranie dancyh z czytnika
-string* Nadzorca::Czytanie_karty(string&rozkazy, int&rozmiar, Pcb*wsk,int in_out){
+string* Nadzorca::Czytanie_karty(string&rozkazy, int&rozmiar, Pcb*wsk,int&in_out){
 	Czyt*data = new Czyt;
 	string *message;
 	//if (RUNNING != wsk->szukanieProcesu("*IBSUP")) wsk->uruchomienieProcesu("*IBSUP");
@@ -438,7 +451,7 @@ string* Nadzorca::Czytanie_karty(string&rozkazy, int&rozmiar, Pcb*wsk,int in_out
 		Pcb *wskaznikNaProces = drugiProces->szukanieProcesu("*IN");
 		message = wskaznikNaProces->czytanieKomunikatu();
 		if (message != nullptr)
-			rozkazy = data->Czytaj(*message, false, *message, rozmiar);
+			rozkazy = data->Czytaj(*message, false, *message, rozmiar, in_out);
 
 	}
 	return message;

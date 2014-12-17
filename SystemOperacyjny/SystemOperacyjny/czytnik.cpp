@@ -74,6 +74,7 @@ string Czyt::Czytaj(string&nazwa, bool dr_nr, string com,int&rozmiar, int&inout)
 				cout << rozkazy2 << endl;
 				nazwa = job.getName();
 				rozmiar = job.getSize();
+				inout = job.sprawdzIO();
 				
 			}
 			}

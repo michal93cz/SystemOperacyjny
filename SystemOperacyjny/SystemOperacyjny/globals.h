@@ -9,8 +9,6 @@ __declspec(selectany) Pcb *RUNNING = nullptr;
 __declspec(selectany) Pcb *NEXTTRY = nullptr;
 __declspec(selectany) memory naszaPamiec;
 __declspec(selectany) rejestry rejestr;
-__declspec(selectany) bool*BLK;
-__declspec(selectany) bool*STP;
 
 
 #endif

@@ -23,7 +23,7 @@ private:
 	Pcb *drugiProces = nullptr;
 	Pcb *firstGroupOne = nullptr;
 	Pcb *firstGroupTwo = nullptr;
-	string* Czytanie_karty(string&rozkazy, int&rozmiar, Pcb*wsk,int in_out);
+	string* Czytanie_karty(string&rozkazy, int&rozmiar, Pcb*wsk,int&in_out);
 	void Drukowanie_komunikatow();
 	string*nazwap_procesu;
 	bool IBSUP_ERR();
