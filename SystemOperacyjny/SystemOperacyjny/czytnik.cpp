@@ -95,7 +95,7 @@ vector <Bufor> Czyt::Czytaj(string&nazwa, bool dr_nr, string com, int&rozmiar, i
 				}
 
 			}
-			USER_SEM->P();
+			USER_SEM->V();
 
 		}
 	}
