@@ -16,7 +16,7 @@ class Nadzorca
 {
 private:
 	//zawieraz procesy systemowe i p_bezczynn
-	string tab_sys[3];
+	string tab_sys[2];
 	//ladowanie karty $JOB
 	void Zal_JOB(int dr_nr);
 	Pcb *pierwszyProces = nullptr;
@@ -36,7 +36,6 @@ public:
 	Nadzorca(){
 		tab_sys[0] = "*IN";
 		tab_sys[1] = "*OUT";
-		tab_sys[2] = "Proces_bezczynnosci";
 		pierwszyProces = new Pcb("*IBSUP", &firstGroupOne);
 		pierwszyProces->uruchomienieProcesu("*IBSUP");
 		RUNNING = pierwszyProces;

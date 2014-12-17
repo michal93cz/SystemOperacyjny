@@ -88,6 +88,7 @@ void Nadzorca::CUSERPROG(){
 			//Pobranie nazwy procesu
 			cin >> dane;
 			if (Usuwanie_procesow(dane)) cout << "Blad";
+			getchar();
 		}
 		else if (dane == "znajdz")
 		{
@@ -99,6 +100,7 @@ void Nadzorca::CUSERPROG(){
 				cout << "Wynik szukania: " << RUNNING->szukanieProcesu((char*)dane.c_str()) << endl;
 			else
 				cout << "Nie ma takiego procesu\n";
+			getchar();
 		}
 		else if (dane == "0") break;
 	}
@@ -129,7 +131,6 @@ void Nadzorca::Zal_JOB(int dr_nr){
 			naszaPamiec.displayPamiec();
 	}
 	zawiadowca();
-	getchar();
 }
 
 bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
@@ -183,7 +184,10 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 		}
 	}
 	//Uruchomienie procesów
+	wskaznik->uruchomienieProcesu("USERPROG");
 	nowy->uruchomienieProcesu(nowy->getName());
+	nowy->uruchomienieProcesu((char*)nazwa_in->c_str());
+	nowy->uruchomienieProcesu((char*)nazwa_out->c_str());
 	return 0;
 }
 
