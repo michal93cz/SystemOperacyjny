@@ -8,11 +8,11 @@ void Nadzorca::INIT(){
 	for (int i = 0; i < 2; i++)
 	{
 		pierwszyProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 0);
-		//pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
+		pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		RUNNING = drugiProces;
 		NEXTTRY = pierwszyProces;
 		drugiProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 0);
-		//drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
+		drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		RUNNING = pierwszyProces;
 		NEXTTRY = drugiProces;
 		cout << "-------------------------------\n";
@@ -30,7 +30,7 @@ void Nadzorca::CUSERPROG(){
 	cout << "Gotowe\n";
 	while (1){
 		cout << "\n" << "------------------------------------------------\n";
-		cout << "Opcje:run,load,view,pam,view_on,usun,znajdz,druk\n";
+		cout << "Opcje:run,load,view,pam,view_on,usun,znajdz\n";
 		cout << "------------------------------------------------\n";
 		//Pobranie komendy
 		getline(cin, dane);
@@ -64,7 +64,6 @@ void Nadzorca::CUSERPROG(){
 			pobrane = 2;
 			//Pobranie karty $JOB i wpisanie jej do pamieci
 			Zal_JOB(pobrane);
-
 		}
 		else if (dane == "view" || dane == "")
 		{
@@ -88,18 +87,18 @@ void Nadzorca::CUSERPROG(){
 			cout << "Podaj nazwe procesu: ";
 			//Pobranie nazwy procesu
 			cin >> dane;
-			Usuwanie_procesow(dane);
+			if (Usuwanie_procesow(dane)) cout << "Blad";
 		}
 		else if (dane == "znajdz")
 		{
 			cout << "Podaj nazwe procesu: ";
 			//Pobranie nazwy procesu
 			cin >> dane;
-			cout << "Wynik szukania: " << RUNNING->szukanieProcesu((char*)dane.c_str()) << endl;
-		}
-		else if (dane == "druk")
-		{
-			Drukowanie_komunikatow();
+			Pcb*adr =RUNNING->szukanieProcesu((char*)dane.c_str());
+			if ((adr != pierwszyProces&&dane != "*IBSUP") || (adr != pierwszyProces&&dane != "*IBSUP"))
+				cout << "Wynik szukania: " << RUNNING->szukanieProcesu((char*)dane.c_str()) << endl;
+			else
+				cout << "Nie ma takiego procesu\n";
 		}
 		else if (dane == "0") break;
 	}
@@ -484,18 +483,26 @@ bool Nadzorca::IBSUP_ERR(){
 }
 
 bool Nadzorca::Usuwanie_procesow(string dane){
-	nazwa_in = new string;
-	nazwa_out = new string;
-	nazwa_in->append(dane);
-	nazwa_in->append("_IN");
-	nazwa_out->append(dane);
-	nazwa_out->append("_OUT");
-	if (RUNNING == RUNNING->szukanieProcesu((char*)dane.c_str())) RUNNING = RUNNING->szukanieProcesu("*IBSUP");
-	RUNNING->usuniecieProcesu((char*)dane.c_str());
-	cout << "-------------------------------\n";
-	RUNNING->usuniecieProcesu((char*)nazwa_in->c_str());
-	cout << "-------------------------------\n";
-	RUNNING->usuniecieProcesu((char*)nazwa_out->c_str());
-	cout << "-------------------------------\n";
-	return 0;
+	if (dane != "*IBSUP" || dane != "Proces_bezczynnosci"
+		|| dane != "*IN" || dane != "*OUT"){
+		nazwa_in = new string;
+		nazwa_out = new string;
+		nazwa_in->append(dane);
+		nazwa_in->append("_IN");
+		nazwa_out->append(dane);
+		nazwa_out->append("_OUT");
+		if (RUNNING == RUNNING->szukanieProcesu((char*)dane.c_str())) RUNNING = RUNNING->szukanieProcesu("*IBSUP");
+		RUNNING->usuniecieProcesu((char*)dane.c_str());
+		cout << "-------------------------------\n";
+		RUNNING->usuniecieProcesu((char*)nazwa_in->c_str());
+		cout << "-------------------------------\n";
+		RUNNING->usuniecieProcesu((char*)nazwa_out->c_str());
+		cout << "-------------------------------\n";
+		return 0;
+	}
+	else
+	{
+		cout << "Nastapila proba usuniecia procesu systemowego";
+		return 1;
+	}
 }
