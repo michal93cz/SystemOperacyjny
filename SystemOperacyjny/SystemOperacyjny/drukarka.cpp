@@ -37,7 +37,7 @@ void Druk::Drukuj(char zapisywanie[], string IO, string com)
 					cout << "Blad, nie otworzono pliku.";
 				}
 
-				//	USER_SEM->V();
+				USER_SEM->V();
 			}
 		}
 		else
@@ -65,7 +65,7 @@ void Druk::Drukuj(char zapisywanie[], string IO, string com)
 					cout << "Blad, nie otworzono pliku.";
 				}
 
-				//USER_SEM->V();
+				USER_SEM->V();
 
 			}
 		}

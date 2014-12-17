@@ -5,10 +5,9 @@ Czyt::Czyt()
 	USER_SEM = new SEMAPHORE(0);	//tworzenie semafora USER_SEMAPHORE
 }
 //funkcja czytania karty zwracajaca rozkazy na tej karcie
-string Czyt::Czytaj(string&nazwa, bool dr_nr, string com,int&rozmiar)
+string Czyt::Czytaj(string&nazwa, bool dr_nr, string com,int&rozmiar, int&inout)
 {
 	JOB job;
-	string IO;
 	string rozkazy;
 	string buf;
 	vector <string> tmp;
@@ -38,7 +37,8 @@ string Czyt::Czytaj(string&nazwa, bool dr_nr, string com,int&rozmiar)
 					cout << rozkazy1 << endl;
 					nazwa = job.getName();
 					rozmiar = job.getSize();
-					IO = "drukarka1";
+					inout = job.sprawdzIO();
+					
 
 				}
 				USER_SEM->V();
@@ -74,7 +74,8 @@ string Czyt::Czytaj(string&nazwa, bool dr_nr, string com,int&rozmiar)
 				cout << rozkazy2 << endl;
 				nazwa = job.getName();
 				rozmiar = job.getSize();
-				IO = "drukarka2";
+				inout = job.sprawdzIO();
+				
 			}
 			}
 			USER_SEM->V();

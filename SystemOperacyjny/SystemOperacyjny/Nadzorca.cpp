@@ -8,11 +8,11 @@ void Nadzorca::INIT(){
 	for (int i = 0; i < 2; i++)
 	{
 		pierwszyProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 0);
-		//pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
+		pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		RUNNING = drugiProces;
 		NEXTTRY = pierwszyProces;
 		drugiProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 0);
-		//drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
+		drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		RUNNING = pierwszyProces;
 		NEXTTRY = drugiProces;
 		cout << "-------------------------------\n";
@@ -30,7 +30,7 @@ void Nadzorca::CUSERPROG(){
 	cout << "Gotowe\n";
 	while (1){
 		cout << "\n" << "------------------------------------------------\n";
-		cout << "Opcje:run,load,view,pam,view_on,usun,znajdz,druk\n";
+		cout << "Opcje:run,load,view,pam,view_on,usun,znajdz\n";
 		cout << "------------------------------------------------\n";
 		//Pobranie komendy
 		getline(cin, dane);
@@ -64,7 +64,6 @@ void Nadzorca::CUSERPROG(){
 			pobrane = 2;
 			//Pobranie karty $JOB i wpisanie jej do pamieci
 			Zal_JOB(pobrane);
-
 		}
 		else if (dane == "view" || dane == "")
 		{
@@ -88,18 +87,20 @@ void Nadzorca::CUSERPROG(){
 			cout << "Podaj nazwe procesu: ";
 			//Pobranie nazwy procesu
 			cin >> dane;
-			Usuwanie_procesow(dane);
+			if (Usuwanie_procesow(dane)) cout << "Blad";
+			getchar();
 		}
 		else if (dane == "znajdz")
 		{
 			cout << "Podaj nazwe procesu: ";
 			//Pobranie nazwy procesu
 			cin >> dane;
-			cout << "Wynik szukania: " << RUNNING->szukanieProcesu((char*)dane.c_str()) << endl;
-		}
-		else if (dane == "druk")
-		{
-			Drukowanie_komunikatow();
+			Pcb*adr =RUNNING->szukanieProcesu((char*)dane.c_str());
+			if ((adr != pierwszyProces&&dane != "*IBSUP") || (adr != pierwszyProces&&dane != "*IBSUP"))
+				cout << "Wynik szukania: " << RUNNING->szukanieProcesu((char*)dane.c_str()) << endl;
+			else
+				cout << "Nie ma takiego procesu\n";
+			getchar();
 		}
 		else if (dane == "0") break;
 	}
@@ -130,13 +131,10 @@ void Nadzorca::Zal_JOB(int dr_nr){
 			naszaPamiec.displayPamiec();
 	}
 	zawiadowca();
-	getchar();
 }
 
 bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 {
-	BLK = &(RUNNING->stopped);
-	STP = &(RUNNING->blocked);
 	Czyt*data = new Czyt;
 	Interpreter interpreter;
 	Pcb*nowy;
@@ -145,10 +143,16 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 	nazwa_out = new string;
 	*nazwap_procesu = "READ";
 	string kod;
+	int z_in_out=0;
 	int rozmiar = 1;
 	wskaznik->wysylanieKomunikatu("*IN", nazwap_procesu->length(), (char*)nazwap_procesu->c_str());
-	nazwap_procesu = Czytanie_komunikatow(kod, rozmiar, wskaznik);
+	nazwap_procesu = Czytanie_karty(kod, rozmiar, wskaznik,z_in_out);
 	if (nazwap_procesu == nullptr)	return 1;
+	if (z_in_out == 3) {
+		wskaznik->wysylanieKomunikatu("*OUT", kod.length(), (char*)kod.c_str());
+		Drukowanie_komunikatow();
+		return 0;
+	}
 	//Utworzenie USERPROG
 	if (wskaznik->szukanieProcesu("USERPROG")==wskaznik)
 	wskaznik->tworzenieProcesu("USERPROG", 0);
@@ -158,6 +162,12 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 	//Tworzenie odpowiednich procesow w odowiedniej grupie
 	wskaznik->tworzenieProcesu((char*)nazwap_procesu->c_str(), rozmiar);
 	if (IBSUP_ERR()) return 1;
+	if (z_in_out == 2){
+		wskaznik->wysylanieKomunikatu((char*)nazwap_procesu->c_str(), 7, "Czytaj");
+	}
+	if (z_in_out == 1){
+		wskaznik->wysylanieKomunikatu((char*)nazwap_procesu->c_str(), 7, "D_C");
+	}
 	nazwa_in->append(*nazwap_procesu);
 	nazwa_in->append("_IN");
 	nazwa_out->append(*nazwap_procesu);
@@ -184,7 +194,10 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 		}
 	}
 	//Uruchomienie procesów
+	wskaznik->uruchomienieProcesu("USERPROG");
 	nowy->uruchomienieProcesu(nowy->getName());
+	nowy->uruchomienieProcesu((char*)nazwa_in->c_str());
+	nowy->uruchomienieProcesu((char*)nazwa_out->c_str());
 	return 0;
 }
 
@@ -302,7 +315,10 @@ int Nadzorca::Wykonaj(Pcb*proces){
 			tmp = raw_param;
 		else
 			tmp = to_string(przekarz);
-		RUNNING->wysylanieKomunikatu("*OUT", tmp.length(), (char*)tmp.c_str());
+		string tmp2 = RUNNING->getName();
+		tmp2.append("_OUT");
+		RUNNING->wysylanieKomunikatu((char*)tmp2.c_str(), tmp.length(), (char*)tmp.c_str());
+		Przekazywanie_komunikatow((char*)tmp2.c_str());
 		//RUNNING->zatrzymywanieProcesu((char*)tmp1.c_str());
 		//RUNNING->uruchomienieProcesu(wskaznik->getName());
 		break;
@@ -371,19 +387,23 @@ int Nadzorca::Wykonaj(Pcb*proces){
 void Nadzorca::FIN_procesu(Pcb*proces){
 	Pcb*proces2;
 	string abc = proces->getName();
-	/*proces->zatrzymywanieProcesu((char*)abc.c_str());*/
+	string*message=new string;
+	message->append("D_C");
 	cout << "\n" << "------------------------------------------------\n";
-	cout << "BYE\nKoniec procesu\nDrukowanie wynikow\n" << endl;
-	proces2=proces->szukanieProcesu("*OUT");
-	int licz=proces2->message_semaphore_receiver.GET_VALUE();
-	for (int i = 0; i < licz;i++)
-	Drukowanie_komunikatow();
+	cout << "BYE\nKoniec procesu\n";
+	string*tma=proces->czytanieKomunikatu();
+	if (*tma == *message){
+		cout << "Drukowanie komunikatow\n";
+		proces2 = proces->szukanieProcesu("*OUT");
+		int licz = proces2->message_semaphore_receiver.GET_VALUE();
+		for (int i = 0; i < licz; i++)
+			Drukowanie_komunikatow();
+	}
 	cout << "\n" << "------------------------------------------------\n";
 	cout << "BYE\nUsuwanie procesu" << endl << abc;
 	if (Usuwanie_procesow(abc) != 0) cout << "Blad";
 	cout << "Proces usuniety\n";
-	//RUNNING->zatrzymywanieProcesu("Proces_bezczynnosci");
-	//RUNNING->uruchomienieProcesu("*IBSUP");
+	delete message;
 	zawiadowca();
 }
 
@@ -416,7 +436,7 @@ void Nadzorca::FIN(){
 }
 
 //Odczytanie komunikatu i pobranie dancyh z czytnika
-string* Nadzorca::Czytanie_komunikatow(string&rozkazy, int&rozmiar, Pcb*wsk){
+string* Nadzorca::Czytanie_karty(string&rozkazy, int&rozmiar, Pcb*wsk,int&in_out){
 	Czyt*data = new Czyt;
 	string *message;
 	//if (RUNNING != wsk->szukanieProcesu("*IBSUP")) wsk->uruchomienieProcesu("*IBSUP");
@@ -424,14 +444,14 @@ string* Nadzorca::Czytanie_komunikatow(string&rozkazy, int&rozmiar, Pcb*wsk){
 		Pcb *wskaznikNaProces = pierwszyProces->szukanieProcesu("*IN");
 		message = wskaznikNaProces->czytanieKomunikatu();
 		if (message != nullptr)
-			rozkazy = data->Czytaj(*message, true, *message,rozmiar);
+			rozkazy = data->Czytaj(*message, true, *message,rozmiar,in_out);
 	}
 	if (wsk == drugiProces)
 	{
 		Pcb *wskaznikNaProces = drugiProces->szukanieProcesu("*IN");
 		message = wskaznikNaProces->czytanieKomunikatu();
 		if (message != nullptr)
-			rozkazy = data->Czytaj(*message, false, *message, rozmiar);
+			rozkazy = data->Czytaj(*message, false, *message, rozmiar, in_out);
 
 	}
 	return message;
@@ -449,6 +469,14 @@ void Nadzorca::Drukowanie_komunikatow(){
 	if (*(RUNNING->firstPcb) == drugiProces)
 		drukarka->Drukuj((char*)message->c_str(), "drukarka2", "PRIN");
 	RUNNING = wskaznikNaProces2;
+}
+
+void Nadzorca::Przekazywanie_komunikatow(char*proces){
+	Pcb *wskaznikNaProces = RUNNING->szukanieProcesu(proces);
+	string *message = wskaznikNaProces->czytanieKomunikatu();
+	message->append(" ");
+	message->append(wskaznikNaProces->getName());
+	RUNNING->wysylanieKomunikatu("*OUT", message->length(), (char*)message->c_str());
 }
 
 //Sprawdza czy nie ma komunikatu bledu
@@ -473,18 +501,26 @@ bool Nadzorca::IBSUP_ERR(){
 }
 
 bool Nadzorca::Usuwanie_procesow(string dane){
-	nazwa_in = new string;
-	nazwa_out = new string;
-	nazwa_in->append(dane);
-	nazwa_in->append("_IN");
-	nazwa_out->append(dane);
-	nazwa_out->append("_OUT");
-	if (RUNNING == RUNNING->szukanieProcesu((char*)dane.c_str())) RUNNING = RUNNING->szukanieProcesu("*IBSUP");
-	RUNNING->usuniecieProcesu((char*)dane.c_str());
-	cout << "-------------------------------\n";
-	RUNNING->usuniecieProcesu((char*)nazwa_in->c_str());
-	cout << "-------------------------------\n";
-	RUNNING->usuniecieProcesu((char*)nazwa_out->c_str());
-	cout << "-------------------------------\n";
-	return 0;
+	if (dane != "*IBSUP" || dane != "Proces_bezczynnosci"
+		|| dane != "*IN" || dane != "*OUT"){
+		nazwa_in = new string;
+		nazwa_out = new string;
+		nazwa_in->append(dane);
+		nazwa_in->append("_IN");
+		nazwa_out->append(dane);
+		nazwa_out->append("_OUT");
+		if (RUNNING == RUNNING->szukanieProcesu((char*)dane.c_str())) RUNNING = RUNNING->szukanieProcesu("*IBSUP");
+		RUNNING->usuniecieProcesu((char*)dane.c_str());
+		cout << "-------------------------------\n";
+		RUNNING->usuniecieProcesu((char*)nazwa_in->c_str());
+		cout << "-------------------------------\n";
+		RUNNING->usuniecieProcesu((char*)nazwa_out->c_str());
+		cout << "-------------------------------\n";
+		return 0;
+	}
+	else
+	{
+		cout << "Nastapila proba usuniecia procesu systemowego";
+		return 1;
+	}
 }

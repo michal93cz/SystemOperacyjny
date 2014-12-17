@@ -16,27 +16,27 @@ class Nadzorca
 {
 private:
 	//zawieraz procesy systemowe i p_bezczynn
-	string tab_sys[3];
+	string tab_sys[2];
 	//ladowanie karty $JOB
 	void Zal_JOB(int dr_nr);
 	Pcb *pierwszyProces = nullptr;
 	Pcb *drugiProces = nullptr;
 	Pcb *firstGroupOne = nullptr;
 	Pcb *firstGroupTwo = nullptr;
-	string* Czytanie_komunikatow(string&rozkazy, int&rozmiar, Pcb*wsk);
+	string* Czytanie_karty(string&rozkazy, int&rozmiar, Pcb*wsk,int&in_out);
 	void Drukowanie_komunikatow();
 	string*nazwap_procesu;
 	bool IBSUP_ERR();
 	bool Tworzenie_wczytywanie_dg(Pcb*wskaznik);
 	bool Usuwanie_procesow(string dane);
 	void FIN_procesu(Pcb*proces);
+	void Przekazywanie_komunikatow(char*proces);
 	string*nazwa_in;
 	string*nazwa_out;
 public:
 	Nadzorca(){
 		tab_sys[0] = "*IN";
 		tab_sys[1] = "*OUT";
-		tab_sys[2] = "Proces_bezczynnosci";
 		pierwszyProces = new Pcb("*IBSUP", &firstGroupOne);
 		pierwszyProces->uruchomienieProcesu("*IBSUP");
 		RUNNING = pierwszyProces;
@@ -46,6 +46,8 @@ public:
 	}
 	~Nadzorca(){
 		delete nazwap_procesu;
+		delete nazwa_in;
+		delete nazwa_out;
 		delete pierwszyProces;
 		delete drugiProces;
 	}
