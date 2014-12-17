@@ -145,9 +145,10 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 	nazwa_out = new string;
 	*nazwap_procesu = "READ";
 	string kod;
+	int z_in_out;
 	int rozmiar = 1;
 	wskaznik->wysylanieKomunikatu("*IN", nazwap_procesu->length(), (char*)nazwap_procesu->c_str());
-	nazwap_procesu = Czytanie_komunikatow(kod, rozmiar, wskaznik);
+	nazwap_procesu = Czytanie_karty(kod, rozmiar, wskaznik,z_in_out);
 	if (nazwap_procesu == nullptr)	return 1;
 	//Utworzenie USERPROG
 	if (wskaznik->szukanieProcesu("USERPROG")==wskaznik)
