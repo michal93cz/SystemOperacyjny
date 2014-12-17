@@ -416,31 +416,35 @@ void Nadzorca::FIN_procesu(Pcb*proces){
 
 //Zamykanie systemu
 void Nadzorca::FIN(){
-	Pcb *wskaznikProcesu = RUNNING;
-	string a = wskaznikProcesu->getName();
-	do
-	{
-		a = wskaznikProcesu->getName();
-		if (wskaznikProcesu != nullptr)
+	RUNNING->uruchomienieProcesu("*IBSUP");
+	string a;
+	do{
+		a = RUNNING->getName();
+		if (RUNNING != nullptr&&RUNNING != pierwszyProces&&RUNNING != drugiProces)
 		{
-			if (a == "USERPROG")break;
-			wskaznikProcesu = wskaznikProcesu->getLastAll();
-			wskaznikProcesu->usuniecieProcesu((char*)a.c_str());
+			RUNNING = RUNNING->getNextThisGroup();
+			RUNNING->usuniecieProcesu((char*)a.c_str());
 			cout << "Usunieto proces " << a << "\n";
-
 		}
-	} while (1);
+		else
+			RUNNING = RUNNING->getNextThisGroup();
+	} while (RUNNING->liczenieProcesu() > 1);
+	RUNNING = RUNNING->getNextAll();
+	RUNNING->uruchomienieProcesu("*IBSUP");
+	do{
+		a = RUNNING->getName();
+		if (RUNNING != nullptr&&RUNNING != pierwszyProces&&RUNNING != drugiProces)
+		{
+			RUNNING = RUNNING->getNextThisGroup();
+			RUNNING->usuniecieProcesu((char*)a.c_str());
+			cout << "Usunieto proces " << a << "\n";
+		}
+		else
+			RUNNING = RUNNING->getNextThisGroup();
+	} while (RUNNING->liczenieProcesu() > 1);
 
-	pierwszyProces->usuniecieProcesu("USERPROG");
-	cout << "Usuwanie procesow systemowych\n";
-	for (int i = 0; i < 3; i++)
-	{
-		pierwszyProces->usuniecieProcesu((char*)tab_sys[i].c_str());
-		drugiProces->usuniecieProcesu((char*)tab_sys[i].c_str());
-		cout << "Usunieto proces" << tab_sys[i] << "\n";
-	}
 	RUNNING->wydrukujWszystkieProcesy();
-} 
+}
 
 //Odczytanie komunikatu i pobranie dancyh z czytnika
 vector<Bufor>* Nadzorca::Czytanie_karty(Pcb*wsk){
