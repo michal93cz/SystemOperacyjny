@@ -5,7 +5,7 @@ Czyt::Czyt()
 	USER_SEM = new SEMAPHORE(0);	//tworzenie semafora USER_SEMAPHORE
 }
 //funkcja czytania karty zwracajaca rozkazy na tej karcie
-vector <Bufor> Czyt::Czytaj(string&nazwa, bool dr_nr, string com, int&rozmiar, int&inout)
+vector <Bufor> Czyt::Czytaj(bool dr_nr, string com)
 {
 	JOB job;
 	string buf;

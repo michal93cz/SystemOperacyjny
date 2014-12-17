@@ -446,13 +446,13 @@ string* Nadzorca::Czytanie_karty(string&rozkazy, int&rozmiar, Pcb*wsk,int&in_out
 	if (wsk == pierwszyProces){
 		message = Czytanie_kom(wsk);
 		if (message != nullptr)
-			bufor = data->Czytaj(*message, true, *message, rozmiar, in_out);
+			bufor = data->Czytaj(true, *message);
 	}
 	if (wsk == drugiProces)
 	{
 		message = Czytanie_kom(wsk);
 		if (message != nullptr)
-			bufor = data->Czytaj(*message, false, *message, rozmiar, in_out);
+			bufor = data->Czytaj(false, *message);
 
 	}
 	rozkazy = bufor[0].rozkazy;
