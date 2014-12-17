@@ -33,7 +33,7 @@ vector <Bufor> Czyt::Czytaj(bool dr_nr, string com)
 				{
 					USER_SEM->P();
 					cout << "Rozpoczecie czytania:" <<endl;
-					for (int i = 0; i < 1; i++){
+					for (int i = 0; i <job.nrlini; i++){
 						bufor.push_back(Bufor());
 						bufor[i].rozkazy = job.getData(i);
 						//cout << rozkazy1 << endl;
@@ -71,7 +71,7 @@ vector <Bufor> Czyt::Czytaj(bool dr_nr, string com)
 				else{
 				USER_SEM->P();
 				cout << "Rozpoczecie czytania:" << endl;
-				for (int i = 0; i < 1; i++){
+				for (int i = 0; i < job.nrlini; i++){
 					bufor.push_back(Bufor());
 					bufor[i].rozkazy = job.getData(i);
 					//cout << rozkazy1 << endl;

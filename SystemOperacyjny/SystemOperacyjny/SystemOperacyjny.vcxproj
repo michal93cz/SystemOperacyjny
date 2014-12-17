@@ -116,10 +116,6 @@
     <None Include="plik1.job" />
     <None Include="plik2.job" />
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="wyniki1.txt" />
-    <Text Include="wyniki2.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

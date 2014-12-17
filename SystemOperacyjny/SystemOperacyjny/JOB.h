@@ -16,7 +16,6 @@ private:
 	string Job;
 	string Name;
 	string Data;
-
 	vector<Bufor> Buf;
 
 public:
@@ -33,6 +32,7 @@ public:
 	int sprawdzIO(int i);
 	string getData(int i); // funkcja zwracajaca dane z karty
 	string getName(int i); // funkcja zwracajaca nazwe
+	int nrlini = 0;
 	
 
 

@@ -16,7 +16,7 @@ void JOB::JOB_plik(string plik)
 	if(bazadanych.is_open())
 	{
 	
-		int nrlini = 0;
+		
 		string buf;
 
 		cout << "Wczytywanie pliku do bufora.";

@@ -199,11 +199,12 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 				else  cout << (char)tmp << endl;
 			}
 		}
-		wskaznik->zatrzymywanieProcesu("*IBSUP");
-		wskaznik->uruchomienieProcesu("USERPROG");
-		for (int i = 0; programy->size() > i; i++)
-			wskaznik->uruchomienieProcesu((char*)programy->at(i).nazwa.c_str());
+		getchar();
 	}
+	wskaznik->zatrzymywanieProcesu("*IBSUP");
+	wskaznik->uruchomienieProcesu("USERPROG");
+	for (int i = 0; programy->size() > i; i++)
+		wskaznik->uruchomienieProcesu((char*)programy->at(i).nazwa.c_str());
 	return 0;
 }
 
@@ -479,7 +480,7 @@ void Nadzorca::Drukowanie_komunikatow(Pcb*pr){
 	string *message = wsk->czytanieKomunikatu();
 	if (*(RUNNING->firstPcb) == pierwszyProces)
 		drukarka->Drukuj((char*)message->c_str(), "drukarka1", "PRIN");
-	if (*(RUNNING->firstPcb) == drugiProces)
+	else if (*(RUNNING->firstPcb) == drugiProces)
 		drukarka->Drukuj((char*)message->c_str(), "drukarka2", "PRIN");
 	wsk->zatrzymywanieProcesu("*OUT");
 	do{

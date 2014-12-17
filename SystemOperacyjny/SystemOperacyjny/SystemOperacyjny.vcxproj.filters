@@ -125,12 +125,4 @@
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="wyniki1.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="wyniki2.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-  </ItemGroup>
 </Project>
