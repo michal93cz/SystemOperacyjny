@@ -21,13 +21,8 @@ private:
 
 public:
 	JOB();
-	JOB(string Name, string Data)
-	{
-		this->Name=Name;
-		this->Data=Data;
-	}
 
-	void JOB_plik(string plik); //otwieranie karty z pliku
+	void JOB_plik(int&licznik,string plik); //otwieranie karty z pliku
 	string getJOB(int i);
 	int getSize(int i);
 	int sprawdzIO(int i);

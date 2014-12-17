@@ -2,17 +2,17 @@
 
 JOB::JOB()
 {
+
 	Job = "null";
 	Name = "null";
 	Data = "null";
 	
 }
 //otwieranie karty job z pliku
-void JOB::JOB_plik(string plik)
+void JOB::JOB_plik(int&licznik,string plik)
 {
 	cout << "Orwieranie karty JOB" << endl;
 	fstream bazadanych(plik,ios::in);
-
 	if(bazadanych.is_open())
 	{
 	
@@ -24,10 +24,13 @@ void JOB::JOB_plik(string plik)
 		{
 			Buf.push_back(Bufor());
 			getline(bazadanych, buf);
+			licznik++;
 			Buf[nrlini].dane=buf;
 			getline(bazadanych, buf);
+			licznik++;
 			Buf[nrlini].nazwa = buf;
 			getline(bazadanych, buf);
+			licznik++;
 			Buf[nrlini].rozkazy = buf;
 			nrlini++;
 

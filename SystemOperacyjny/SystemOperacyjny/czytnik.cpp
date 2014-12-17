@@ -8,36 +8,42 @@ Czyt::Czyt()
 vector <Bufor> Czyt::Czytaj(string&nazwa, bool dr_nr, string com, int&rozmiar, int&inout)
 {
 	JOB job;
-	string rozkazy;
 	string buf;
+	int licznik = 0;
 	vector <string> tmp;
 	vector <Bufor> bufor;
 	if (dr_nr == 1)
 	{
-		job.JOB_plik("plik1.job");
-		buf = job.getJOB(0);
-		tmp = split(buf, ' ');
-		if (tmp[0] != "$JOB"){
-			cout << "Karta jest nieprawidlowa";
+		if (USER_SEM->GET_VALUE() != 0)
+		{
+			cout << "Urzadzenie: Czytnik jest zajete";
 		}
-		else{
-			if (com != "READ"){
+		else
+		{
+			if (com != "READ")
+			{
 				cout << "Odebrano zly komunikat";
 			}
-			else{
-				string rozkazy1;
-				if (USER_SEM->GET_VALUE() != 0)
+			else
+			{
+				job.JOB_plik(licznik, "plik1.job");
+				USER_SEM->P();
+				for (int i = 0; i < (licznik / 3); i++)
 				{
-					cout << "Urzadzenie: Czytnik jest zajete";
-				}
-				else
-				{
-					USER_SEM->P();
-					cout << "Rozpoczecie czytania:" <<endl;
-					for (int i = 0; i < 1; i++){
+					buf = job.getJOB(i);
+					tmp = split(buf, ' ');
+					if (tmp[0] != "$JOB")
+					{
+						cout << "Nieprawidlowa karta";
+
+					}
+					else
+					{
+
+						cout << "Rozpoczecie czytania:" << endl;
+
 						bufor.push_back(Bufor());
 						bufor[i].rozkazy = job.getData(i);
-						//cout << rozkazy1 << endl;
 						bufor[i].nazwa = job.getName(i);
 						bufor[i].size = job.getSize(i);
 						bufor[i].inout = job.sprawdzIO(i);
@@ -45,48 +51,53 @@ vector <Bufor> Czyt::Czytaj(string&nazwa, bool dr_nr, string com, int&rozmiar, i
 
 				}
 				USER_SEM->V();
-				rozkazy = rozkazy1;
 			}
+
 		}
+
 	}
 	else if (dr_nr == 0)
 	{
-
-		job.JOB_plik("plik2.job");
-		buf = job.getJOB(0);
-		tmp = split(buf, ' ');
-		if (tmp[0] != "$JOB"){
-			cout << "Karta jest nieprawidlowa";
+		if (USER_SEM->GET_VALUE() != 0)
+		{
+			cout << "Urzadzenie: Czytnik jest zajete";
 		}
-		else{
-
-			string rozkazy2;
-			if (USER_SEM->GET_VALUE() != 0)
+		else
+		{
+			if (com != "READ")
 			{
-				cout << "Urzadzenie: Czytnik jest zajete";
+				cout << "Odebrano zly komunikat";
 			}
 			else
 			{
-				if (com != "READ"){
-					cout << "Odebrano zly komunikat";
-				}
-				else{
+				job.JOB_plik(licznik, "plik2.job");
 				USER_SEM->P();
-				cout << "Rozpoczecie czytania:" << endl;
-				for (int i = 0; i < 3; i++){
-					bufor[i].rozkazy = job.getData(i);
-					//cout << rozkazy1 << endl;
-					bufor[i].nazwa = job.getName(i);
-					bufor[i].size = job.getSize(i);
-					bufor[i].inout = job.sprawdzIO(i);
+				for (int i = 0; i < (licznik / 3); i++)
+				{
+					buf = job.getJOB(i);
+					tmp = split(buf, ' ');
+					if (tmp[0] != "$JOB")
+					{
+						cout << "Nieprawidlowa karta";
+
+					}
+					else
+					{
+
+						cout << "Rozpoczecie czytania:" << endl;
+
+						bufor.push_back(Bufor());
+						bufor[i].rozkazy = job.getData(i);
+						bufor[i].nazwa = job.getName(i);
+						bufor[i].size = job.getSize(i);
+						bufor[i].inout = job.sprawdzIO(i);
+					}
 				}
-				
+
 			}
-			}
-			USER_SEM->V();
-			rozkazy = rozkazy2;
+			USER_SEM->P();
+
 		}
 	}
 	return bufor;
 }
-
