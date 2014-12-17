@@ -422,7 +422,7 @@ void Nadzorca::FIN(){
 }
 
 //Odczytanie komunikatu i pobranie dancyh z czytnika
-string* Nadzorca::Czytanie_komunikatow(string&rozkazy, int&rozmiar, Pcb*wsk){
+string* Nadzorca::Czytanie_karty(string&rozkazy, int&rozmiar, Pcb*wsk,int in_out){
 	Czyt*data = new Czyt;
 	string *message;
 	//if (RUNNING != wsk->szukanieProcesu("*IBSUP")) wsk->uruchomienieProcesu("*IBSUP");
@@ -430,7 +430,7 @@ string* Nadzorca::Czytanie_komunikatow(string&rozkazy, int&rozmiar, Pcb*wsk){
 		Pcb *wskaznikNaProces = pierwszyProces->szukanieProcesu("*IN");
 		message = wskaznikNaProces->czytanieKomunikatu();
 		if (message != nullptr)
-			rozkazy = data->Czytaj(*message, true, *message,rozmiar);
+			rozkazy = data->Czytaj(*message, true, *message,rozmiar,in_out);
 	}
 	if (wsk == drugiProces)
 	{
