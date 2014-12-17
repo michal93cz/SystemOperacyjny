@@ -436,24 +436,26 @@ void Nadzorca::FIN(){
 		cout << "Usunieto proces" << tab_sys[i] << "\n";
 	}
 	RUNNING->wydrukujWszystkieProcesy();
-}
+} 
 
 //Odczytanie komunikatu i pobranie dancyh z czytnika
 string* Nadzorca::Czytanie_karty(string&rozkazy, int&rozmiar, Pcb*wsk,int&in_out){
 	Czyt*data = new Czyt; 
 	string *message;
+	vector<Bufor>bufor;
 	if (wsk == pierwszyProces){
 		message = Czytanie_kom(wsk);
 		if (message != nullptr)
-			rozkazy = data->Czytaj(*message, true, *message,rozmiar,in_out);
+			bufor = data->Czytaj(*message, true, *message, rozmiar, in_out);
 	}
 	if (wsk == drugiProces)
 	{
 		message = Czytanie_kom(wsk);
 		if (message != nullptr)
-			rozkazy = data->Czytaj(*message, false, *message, rozmiar, in_out);
+			bufor = data->Czytaj(*message, false, *message, rozmiar, in_out);
 
 	}
+	rozkazy = bufor[0].rozkazy;
 	return message;
 }
 
