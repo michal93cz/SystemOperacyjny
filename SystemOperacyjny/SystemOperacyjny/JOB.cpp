@@ -63,19 +63,19 @@ int JOB::getSize()
 	return size;
 }
 
-string JOB::sprawdzIO()
+int JOB::sprawdzIO()
 {
 	vector <string> k = split(tab[0], ' ');
-	string procesIO;
+	int procesIO;
 	if (k[2] == "IN" && k[3] == "OUT")
 	{
-		procesIO = "INOUT";
+		procesIO = 1; //in i out
 	}
 	else if (k[2] == "IN" && k[3] == "")
 	{
-		procesIO = "IN";
+		procesIO = 2; // tylko in
 	}
-	else procesIO = "OUT";
+	else procesIO = 3; // tylko out
 	
 	return procesIO;
 }
