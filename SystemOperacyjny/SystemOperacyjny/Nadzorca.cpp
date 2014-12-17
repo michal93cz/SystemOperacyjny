@@ -149,7 +149,7 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 		z_in_out=programy->at(i).inout;
 		kod=programy->at(i).rozkazy;
 		rozmiar = programy->at(i).size;
-		if (kod == "")	return 1;
+		if (kod == "null")	return 1;
 		if (z_in_out == 3) {
 			wskaznik->wysylanieKomunikatu("*OUT", kod.length(), (char*)kod.c_str());
 			Drukowanie_komunikatow(wskaznik);
