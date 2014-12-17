@@ -15,7 +15,7 @@ private:
 	JOB job;
 public:
 	Czyt();
-	vector <Bufor> Czytaj(bool dr_nr, string com); //funkcja czytajaca karte 
+	vector <Bufor> Czytaj(string&nazwa, bool dr_nr, string com, int&rozmiar, int&inout); //funkcja czytajaca karte 
 
 
 
