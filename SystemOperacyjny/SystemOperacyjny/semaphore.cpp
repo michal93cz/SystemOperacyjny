@@ -14,7 +14,7 @@ void block(SEMAPHORE *sem)
 {
 	if (RUNNING->getBlocked() != 1) //nie mozna dodac prcesu do kolejki 2 razy, jezeli byl juz wczesniej zablokowany
 	{
-		//RUNNING->setBlocked(); //zablokowanie procesu
+		RUNNING->setBlocked(); //zablokowanie procesu
 		sem->umiesc_na_koncu();
 	}
 }
@@ -24,6 +24,7 @@ void SEMAPHORE::usun_pierwszy() //usuwa pierwszy blok PCB spod semafora
 	kolejka.pop();
 	NEXTTRY = tmp2;
 	std::cout << "usunieto z kolejki: " << tmp2->getName() << std::endl;
+	cout << "Ilosc procesow pod semaforem: " << kolejka.size() << endl;
 	tmp2->resetBlocked();
 }
 void wake_up(SEMAPHORE *sem)
