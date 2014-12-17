@@ -6,6 +6,7 @@
 #include<string>
 #include<vector>
 #include"split.h"
+#include "Bufor.h"
 
 using namespace std;
 
@@ -16,7 +17,7 @@ private:
 	string Name;
 	string Data;
 
-	string *tab;
+	vector<Bufor> Buf;
 
 public:
 	JOB();
@@ -27,11 +28,11 @@ public:
 	}
 
 	void JOB_plik(string plik); //otwieranie karty z pliku
-	string getJOB();
-	int getSize();
-	int sprawdzIO();
-	string getData(); // funkcja zwracajaca dane z karty
-	string getName(); // funkcja zwracajaca nazwe
+	string getJOB(int i);
+	int getSize(int i);
+	int sprawdzIO(int i);
+	string getData(int i); // funkcja zwracajaca dane z karty
+	string getName(int i); // funkcja zwracajaca nazwe
 	
 
 

@@ -11,20 +11,23 @@ JOB::JOB()
 void JOB::JOB_plik(string plik)
 {
 	cout << "Orwieranie karty JOB" << endl;
-	int rozmiar = 3;
 	fstream bazadanych(plik,ios::in);
 
 	if(bazadanych.is_open())
 	{
-		tab = new string[rozmiar];
+	
 		int nrlini = 0;
 		string buf;
 
 		cout << "Wczytywanie pliku do bufora.";
-		while(nrlini!=3) //wczytywanie danych z karty do bufora
+		while(!bazadanych.eof()) //wczytywanie danych z karty do bufora
 		{
 			getline(bazadanych, buf);
-			tab[nrlini]=buf;
+			Buf[nrlini].dane=buf;
+			getline(bazadanych, buf);
+			Buf[nrlini].nazwa = buf;
+			getline(bazadanych, buf);
+			Buf[nrlini].rozkazy = buf;
 			nrlini++;
 
 		}
@@ -36,36 +39,37 @@ void JOB::JOB_plik(string plik)
 	}
 	bazadanych.close();
 }
+
 //funkcja zwracajaca nazwe procesu
-string JOB::getName()
+string JOB::getName(int i)
 {
-	Name = tab[1];
+	Name = Buf[i].nazwa;
 	return Name;
 }
 //funkcja zwracajaca dane z karty
-string JOB::getData()
+string JOB::getData(int i)
 {
-	Data = tab[2];
+	Data = Buf[i].rozkazy;
 	return Data;
 }
 
-string JOB::getJOB()
+string JOB::getJOB(int i)
 {
-	Job = tab[0];
+	Job = Buf[i].dane;
 	return Job;
 
 }
 
-int JOB::getSize()
+int JOB::getSize(int i)
 {
-	vector <string> s = split(tab[0], ' ');
+	vector <string> s = split(Buf[i].dane, ' ');
 	int size = atoi(s[1].c_str());
 	return size;
 }
 
-int JOB::sprawdzIO()
+int JOB::sprawdzIO(int i)
 {
-	vector <string> k = split(tab[0], ' ');
+	vector <string> k = split(Buf[i].dane, ' ');
 	int procesIO;
 	if (k[2] == "IN" && k[3] == "OUT")
 	{

@@ -76,6 +76,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Bufor.h" />
     <ClInclude Include="czytnik.h" />
     <ClInclude Include="drukarka.h" />
     <ClInclude Include="global.h" />
@@ -96,6 +97,7 @@
     <ClInclude Include="ZAWIADOWCA.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bufor.cpp" />
     <ClCompile Include="czytnik.cpp" />
     <ClCompile Include="drukarka.cpp" />
     <ClCompile Include="interpreter.cpp" />
