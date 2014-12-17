@@ -464,3 +464,34 @@ void Pcb::wydrukujWszystkieProcesy()
 		} while (wskaznikProcesu != firstAllPcb);
 	}
 }
+
+int Pcb::liczenieProcesu()
+{
+	Pcb *wsk = RUNNING;
+	int count;
+
+	if (wsk != nullptr)
+	{
+		count = 1;
+		wsk = wsk->getNextThisGroup();
+		bool ster = true;
+		while (ster)
+		{
+			if (wsk != RUNNING)
+			{
+				wsk = wsk->getNextThisGroup();
+				count++;
+			}
+			else
+			{
+				ster = false;
+			}
+
+		}
+		return count;
+	}
+	else
+	{
+		return 0;
+	}
+}

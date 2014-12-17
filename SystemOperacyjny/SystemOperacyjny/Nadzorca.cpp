@@ -8,11 +8,11 @@ void Nadzorca::INIT(){
 	for (int i = 0; i < 2; i++)
 	{
 		pierwszyProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 0);
-		pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
+		//pierwszyProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		RUNNING = drugiProces;
 		NEXTTRY = pierwszyProces;
 		drugiProces->tworzenieProcesu((char*)tab_sys[i].c_str(), 0);
-		drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
+		//drugiProces->uruchomienieProcesu((char*)tab_sys[i].c_str());
 		RUNNING = pierwszyProces;
 		NEXTTRY = drugiProces;
 		cout << "-------------------------------\n";
@@ -156,7 +156,6 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 	//Utworzenie USERPROG
 	if (wskaznik->szukanieProcesu("USERPROG")==wskaznik)
 	wskaznik->tworzenieProcesu("USERPROG", 0);
-	//gdy nie ma kodu
 	interpreter.interpret_code(kod);
 	if (kod == "")	return 1;
 	//Tworzenie odpowiednich procesow w odowiedniej grupie
@@ -194,10 +193,9 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 		}
 	}
 	//Uruchomienie procesów
+	wskaznik->zatrzymywanieProcesu("*IBSUP");
 	wskaznik->uruchomienieProcesu("USERPROG");
-	nowy->uruchomienieProcesu(nowy->getName());
-	nowy->uruchomienieProcesu((char*)nazwa_in->c_str());
-	nowy->uruchomienieProcesu((char*)nazwa_out->c_str());
+	wskaznik->uruchomienieProcesu(nowy->getName());
 	return 0;
 }
 
@@ -307,9 +305,9 @@ int Nadzorca::Wykonaj(Pcb*proces){
 			przekarz=rejestr.Przekaz_w_rejestru(reg1);
 		}
 		//Wyslanie komunikatu z trescia do druku
-		Pcb*wskaznik = RUNNING->szukanieProcesu("*OUT");
+		/*Pcb*wskaznik = RUNNING->szukanieProcesu("*OUT");
 		string tmp1 = wskaznik->getName();
-		wskaznik = RUNNING;
+		wskaznik = RUNNING;*/
 		//RUNNING->uruchomienieProcesu((char*)tmp1.c_str());
 		if (raw_param != NULL)
 			tmp = raw_param;
@@ -404,6 +402,11 @@ void Nadzorca::FIN_procesu(Pcb*proces){
 	if (Usuwanie_procesow(abc) != 0) cout << "Blad";
 	cout << "Proces usuniety\n";
 	delete message;
+	if (RUNNING->liczenieProcesu() == 4)
+	{
+		RUNNING->usuniecieProcesu("USERPROG");
+		RUNNING->uruchomienieProcesu("*IBSUB");
+	}
 	zawiadowca();
 }
 
@@ -437,19 +440,16 @@ void Nadzorca::FIN(){
 
 //Odczytanie komunikatu i pobranie dancyh z czytnika
 string* Nadzorca::Czytanie_karty(string&rozkazy, int&rozmiar, Pcb*wsk,int&in_out){
-	Czyt*data = new Czyt;
+	Czyt*data = new Czyt; 
 	string *message;
-	//if (RUNNING != wsk->szukanieProcesu("*IBSUP")) wsk->uruchomienieProcesu("*IBSUP");
 	if (wsk == pierwszyProces){
-		Pcb *wskaznikNaProces = pierwszyProces->szukanieProcesu("*IN");
-		message = wskaznikNaProces->czytanieKomunikatu();
+		message = Czytanie_kom(wsk);
 		if (message != nullptr)
 			rozkazy = data->Czytaj(*message, true, *message,rozmiar,in_out);
 	}
 	if (wsk == drugiProces)
 	{
-		Pcb *wskaznikNaProces = drugiProces->szukanieProcesu("*IN");
-		message = wskaznikNaProces->czytanieKomunikatu();
+		message = Czytanie_kom(wsk);
 		if (message != nullptr)
 			rozkazy = data->Czytaj(*message, false, *message, rozmiar, in_out);
 
@@ -460,23 +460,41 @@ string* Nadzorca::Czytanie_karty(string&rozkazy, int&rozmiar, Pcb*wsk,int&in_out
 //Odczytanie komunikatu i wyslanie dancyh do drukarki
 void Nadzorca::Drukowanie_komunikatow(){
 	Druk*drukarka = new Druk;
-	Pcb *wskaznikNaProces = RUNNING->szukanieProcesu("*OUT");
-	if (wskaznikNaProces->message_semaphore_receiver.GET_VALUE() < 1) return;
-	Pcb *wskaznikNaProces2=RUNNING;
-	string *message = wskaznikNaProces->czytanieKomunikatu();
+	Pcb *wsk = RUNNING->szukanieProcesu("*IN");
+	if (wsk->message_semaphore_receiver.GET_VALUE() < 1) return;
+	string *message = Czytanie_kom(wsk);
+	wsk = RUNNING->szukanieProcesu("*OUT");
+	if (wsk != RUNNING){
+		do{
+			wsk->uruchomienieProcesu("*OUT");
+			zawiadowca();
+		} while (wsk != RUNNING);
+	}
+
 	if (*(RUNNING->firstPcb) == pierwszyProces)
 		drukarka->Drukuj((char*)message->c_str(), "drukarka1", "PRIN");
 	if (*(RUNNING->firstPcb) == drugiProces)
 		drukarka->Drukuj((char*)message->c_str(), "drukarka2", "PRIN");
-	RUNNING = wskaznikNaProces2;
+	wsk->zatrzymywanieProcesu("*OUT");
+	do{
+		zawiadowca();
+	} while (RUNNING != wsk->szukanieProcesu("*IBSUP"));
 }
 
 void Nadzorca::Przekazywanie_komunikatow(char*proces){
 	Pcb *wskaznikNaProces = RUNNING->szukanieProcesu(proces);
+	wskaznikNaProces->uruchomienieProcesu(proces);
+	if (wskaznikNaProces != RUNNING){
+		do{
+			zawiadowca();
+		} while (wskaznikNaProces != RUNNING);
+	}
 	string *message = wskaznikNaProces->czytanieKomunikatu();
 	message->append(" ");
 	message->append(wskaznikNaProces->getName());
 	RUNNING->wysylanieKomunikatu("*OUT", message->length(), (char*)message->c_str());
+	wskaznikNaProces->zatrzymywanieProcesu(proces);
+		zawiadowca();
 }
 
 //Sprawdza czy nie ma komunikatu bledu
@@ -509,6 +527,7 @@ bool Nadzorca::Usuwanie_procesow(string dane){
 		nazwa_in->append("_IN");
 		nazwa_out->append(dane);
 		nazwa_out->append("_OUT");
+		if (RUNNING->szukanieProcesu((char*)dane.c_str()) == RUNNING->szukanieProcesu("*IBSUP")) return 1;
 		if (RUNNING == RUNNING->szukanieProcesu((char*)dane.c_str())) RUNNING = RUNNING->szukanieProcesu("*IBSUP");
 		RUNNING->usuniecieProcesu((char*)dane.c_str());
 		cout << "-------------------------------\n";
@@ -523,4 +542,21 @@ bool Nadzorca::Usuwanie_procesow(string dane){
 		cout << "Nastapila proba usuniecia procesu systemowego";
 		return 1;
 	}
+}
+
+string*Nadzorca::Czytanie_kom(Pcb*wsk){
+	string*message;
+	wsk = wsk->szukanieProcesu("*IN");
+	if (wsk != RUNNING){
+		do{
+			wsk->uruchomienieProcesu("*IN");
+			zawiadowca();
+		} while (wsk != RUNNING);
+	}
+		message = wsk->czytanieKomunikatu();
+		wsk->zatrzymywanieProcesu("*IN");
+		do{
+			zawiadowca();
+		} while (RUNNING != wsk->szukanieProcesu("*IBSUP"));
+		return message;
 }

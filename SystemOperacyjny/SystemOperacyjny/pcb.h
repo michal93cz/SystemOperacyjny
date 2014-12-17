@@ -29,6 +29,7 @@ public:
 	bool blocked;
 	int mem_pointer = 0;
 	int auto_storage_adress;
+	int liczenieProcesu();
 	Pcb(char *,Pcb **);
 	~Pcb();
 	static SEMAPHORE message_semaphore_common;

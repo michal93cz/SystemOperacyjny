@@ -31,6 +31,7 @@ private:
 	bool Usuwanie_procesow(string dane);
 	void FIN_procesu(Pcb*proces);
 	void Przekazywanie_komunikatow(char*proces);
+	string*Czytanie_kom(Pcb*wsk);
 	string*nazwa_in;
 	string*nazwa_out;
 public:
