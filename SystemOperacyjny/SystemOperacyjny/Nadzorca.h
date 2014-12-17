@@ -26,7 +26,7 @@ private:
 	string* Czytanie_karty(string&rozkazy, int&rozmiar, Pcb*wsk,int&in_out);
 	void Drukowanie_komunikatow();
 	string*nazwap_procesu;
-	bool IBSUP_ERR();
+	bool IBSUP_ERR(Pcb *wskaznik);
 	bool Tworzenie_wczytywanie_dg(Pcb*wskaznik);
 	bool Usuwanie_procesow(string dane);
 	void FIN_procesu(Pcb*proces);

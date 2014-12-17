@@ -160,7 +160,7 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 	if (kod == "")	return 1;
 	//Tworzenie odpowiednich procesow w odowiedniej grupie
 	wskaznik->tworzenieProcesu((char*)nazwap_procesu->c_str(), rozmiar);
-	if (IBSUP_ERR()) return 1;
+	if (IBSUP_ERR(wskaznik)) return 1;
 	if (z_in_out == 2){
 		wskaznik->wysylanieKomunikatu((char*)nazwap_procesu->c_str(), 7, "Czytaj");
 	}
@@ -172,9 +172,9 @@ bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 	nazwa_out->append(*nazwap_procesu);
 	nazwa_out->append("_OUT");
 	wskaznik->tworzenieProcesu((char*)nazwa_in->c_str(), 0);
-	if (IBSUP_ERR()) return 1;
+	if (IBSUP_ERR(wskaznik)) return 1;
 	wskaznik->tworzenieProcesu((char*)nazwa_out->c_str(), 0);
-	if (IBSUP_ERR()) return 1;
+	if (IBSUP_ERR(wskaznik)) return 1;
 	//wskaznik->zatrzymywanieProcesu(wskaznik->getName());
 	nowy = wskaznik->szukanieProcesu((char*)nazwap_procesu->c_str());
 	//Wpisywabnie kodu programu do pamieci
@@ -442,20 +442,24 @@ void Nadzorca::FIN(){
 string* Nadzorca::Czytanie_karty(string&rozkazy, int&rozmiar, Pcb*wsk,int&in_out){
 	Czyt*data = new Czyt; 
 	string *message;
-	vector<Bufor>bufor;
+	vector<Bufor>*bufor = new vector<Bufor>();
 	if (wsk == pierwszyProces){
 		message = Czytanie_kom(wsk);
 		if (message != nullptr)
-			bufor = data->Czytaj(*message, true, *message, rozmiar, in_out);
+			*bufor = data->Czytaj(rozmiar, *message);
 	}
 	if (wsk == drugiProces)
 	{
 		message = Czytanie_kom(wsk);
 		if (message != nullptr)
-			bufor = data->Czytaj(*message, false, *message, rozmiar, in_out);
+			*bufor = data->Czytaj(rozmiar, *message);
 
 	}
-	rozkazy = bufor[0].rozkazy;
+	*message = bufor->at(0).nazwa;
+	rozmiar = bufor->at(0).size;
+	in_out = bufor->at(0).inout;
+	rozkazy = bufor->at(0).rozkazy;
+	delete bufor;
 	return message;
 }
 
@@ -500,11 +504,10 @@ void Nadzorca::Przekazywanie_komunikatow(char*proces){
 }
 
 //Sprawdza czy nie ma komunikatu bledu
-bool Nadzorca::IBSUP_ERR(){
+bool Nadzorca::IBSUP_ERR(Pcb *wskaznik){
 	Druk*drukarka = new Druk;
-	Pcb *wskaznikNaProces = RUNNING->szukanieProcesu("*IBSUP");
 	string *message;
-	message = wskaznikNaProces->czytanieKomunikatu();
+	message = wskaznik->czytanieKomunikatu();
 	if (message != nullptr){
 		if (*message == "Wystapil blad")
 		{
