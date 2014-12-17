@@ -289,8 +289,9 @@ using byte = unsigned char;
 			FSB.add(first, size);
 			merge(FSB.head); // próba scalenie po zwolnieniu
 			FSBSEM->V();
+			int pomocniczaSem = MEMSEM->GET_VALUE();
 			if (MEMSEM->GET_VALUE() < 0){ // sekwencja operacji V, tyle razy ile procesow oczekuje pod semaforem
-				for (int i = 0; i > MEMSEM->GET_VALUE(); i--){
+				for (int i = 0; i > pomocniczaSem; i--){
 					MEMSEM->V();
 				}
 			}
