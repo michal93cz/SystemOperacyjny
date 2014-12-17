@@ -6,7 +6,10 @@ void rejestry::pcb_time()
 {
 	RUNNING->setKwantCzasu(RUNNING->getKwantCzasu() +1);
 	if (RUNNING->getKwantCzasu() == 5)//gdy kwant czasu osi¹gnie 5 (wykonanych zostanie 5 rozkazow na PCB)
+	{
+		licznik_rozkazow = 0;
 		zawiadowca();//zmiana procesora
+	}
 }
 int rejestry::Przekaz_w_rejestru(int a){
 	switch (a){

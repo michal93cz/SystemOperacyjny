@@ -1,7 +1,6 @@
 #ifndef REGISTERS_h
 #define REGISTERS_h
 #include <iostream>
-//#include "globals.h"
 
 using namespace std;
 
@@ -22,30 +21,43 @@ public:
 	{
 		return licznik_rozkazow;
 	}
+	void display_reg()
+	{
+		cout << "Licznik r. : " << licznik_rozkazow << endl;
 
+		cout << "Rejestr A :" << a << endl;
+		cout << "Rejestr B :" << b << endl;
+		cout << "Rejestr C :" << c << endl;
+		cout << "Rejestr D :" << d << endl;
+	}
 	//funkcje do ustawiania wartosci rejestrow
 	void Set_a(int v)
 	{
 		a = v;
 		licznik_rozkazow++;
+		display_reg();
 		pcb_time();
 	}
 	void Set_b(int v)
 	{
 		b = v;
 		licznik_rozkazow++;
+		display_reg();
 		pcb_time();
 	}
 	void Set_c(int v)
 	{
 		c = v;
 		licznik_rozkazow++;
+		display_reg();
 		pcb_time();
 	}
 	void Set_d(int v)
 	{
 		d = v;
 		licznik_rozkazow++;
+		display_reg();
+		pcb_time();
 	}
 
 	//funkcje do pobierania wartosci rejestrow
@@ -67,15 +79,7 @@ public:
 		return d;
 	}
 
-	void display_reg()
-	{
-		cout << "Licznik r. : " << licznik_rozkazow << endl;
-		
-		cout << "Rejestr A :" << a << endl;
-		cout << "Rejestr B :" << b << endl;
-		cout << "Rejestr C :" << c << endl;
-		cout << "Rejestr D :" << d << endl;
-	}
+	
 	
 	int Przekaz_w_rejestru(int a);
 	void Ustaw_w_rejestru(int a, int b);

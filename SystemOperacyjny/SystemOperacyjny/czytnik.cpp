@@ -71,7 +71,8 @@ vector <Bufor> Czyt::Czytaj(bool dr_nr, string com)
 				else{
 				USER_SEM->P();
 				cout << "Rozpoczecie czytania:" << endl;
-				for (int i = 0; i < 3; i++){
+				for (int i = 0; i < 1; i++){
+					bufor.push_back(Bufor());
 					bufor[i].rozkazy = job.getData(i);
 					//cout << rozkazy1 << endl;
 					bufor[i].nazwa = job.getName(i);

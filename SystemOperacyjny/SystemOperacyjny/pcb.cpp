@@ -223,7 +223,7 @@ void Pcb::tworzenieProcesu(char *nazwa_procesu, int wielkosc_pamieci)
 		{
 			nowyProces->setAutoStorageAdress(0);
 		}
-		nowyProces->wysylanieKomunikatu("*IBSUB", 3, "Udane\n");
+		wysylanieKomunikatu("*IBSUP", 3, "Udane");
 		//Do³¹czenie nowego bloku do dwóch list
 		//dolaczenieProcesu(nowyProces); - realizowane w konstruktorze Pcb
 

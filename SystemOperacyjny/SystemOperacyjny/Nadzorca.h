@@ -23,15 +23,14 @@ private:
 	Pcb *drugiProces = nullptr;
 	Pcb *firstGroupOne = nullptr;
 	Pcb *firstGroupTwo = nullptr;
-	string* Czytanie_karty(string&rozkazy, int&rozmiar, Pcb*wsk,int&in_out);
-	void Drukowanie_komunikatow();
-	string*nazwap_procesu;
+	vector<Bufor>* Czytanie_karty(Pcb*wsk);
+	void Drukowanie_komunikatow(Pcb*pr);
 	bool IBSUP_ERR(Pcb *wskaznik);
 	bool Tworzenie_wczytywanie_dg(Pcb*wskaznik);
 	bool Usuwanie_procesow(string dane);
 	void FIN_procesu(Pcb*proces);
 	void Przekazywanie_komunikatow(char*proces);
-	string*Czytanie_kom(Pcb*wsk);
+	string*Czytanie_kom(Pcb*wsk, bool IB_on);
 	string*nazwa_in;
 	string*nazwa_out;
 public:
@@ -46,7 +45,6 @@ public:
 		NEXTTRY = drugiProces;
 	}
 	~Nadzorca(){
-		delete nazwap_procesu;
 		delete nazwa_in;
 		delete nazwa_out;
 		delete pierwszyProces;
