@@ -305,7 +305,10 @@ int Nadzorca::Wykonaj(Pcb*proces){
 			tmp = raw_param;
 		else
 			tmp = to_string(przekarz);
-		RUNNING->wysylanieKomunikatu("*OUT", tmp.length(), (char*)tmp.c_str());
+		string tmp2 = RUNNING->getName();
+		tmp2.append("_OUT");
+		RUNNING->wysylanieKomunikatu((char*)tmp2.c_str(), tmp.length(), (char*)tmp.c_str());
+		Przekazywanie_komunikatow((char*)tmp2.c_str());
 		//RUNNING->zatrzymywanieProcesu((char*)tmp1.c_str());
 		//RUNNING->uruchomienieProcesu(wskaznik->getName());
 		break;
@@ -452,6 +455,14 @@ void Nadzorca::Drukowanie_komunikatow(){
 	if (*(RUNNING->firstPcb) == drugiProces)
 		drukarka->Drukuj((char*)message->c_str(), "drukarka2", "PRIN");
 	RUNNING = wskaznikNaProces2;
+}
+
+void Nadzorca::Przekazywanie_komunikatow(char*proces){
+	Pcb *wskaznikNaProces = RUNNING->szukanieProcesu(proces);
+	string *message = wskaznikNaProces->czytanieKomunikatu();
+	message->append(" ");
+	message->append(wskaznikNaProces->getName());
+	RUNNING->wysylanieKomunikatu("*OUT", message->length(), (char*)message->c_str());
 }
 
 //Sprawdza czy nie ma komunikatu bledu
