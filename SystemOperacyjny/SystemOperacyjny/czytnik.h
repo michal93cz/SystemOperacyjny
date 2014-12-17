@@ -17,8 +17,6 @@ public:
 	Czyt();
 	vector <Bufor> Czytaj(bool dr_nr, string com); //funkcja czytajaca karte 
 
-
-
 };
 
 

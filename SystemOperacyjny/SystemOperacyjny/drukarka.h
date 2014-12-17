@@ -13,15 +13,11 @@ class Druk
 {
 private:
 	SEMAPHORE *USER_SEM;
-	string *tab1, *tab2;
 	
-
 
 public:
 	Druk();
 	void Drukuj(char zapisywanie[], string IO, string com); //funkcja drukarki do zapisywania do pliku(drukowania)
-	void wyswietl();
-	void wyczyscdr(string IO);
 
 };
 

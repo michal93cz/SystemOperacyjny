@@ -20,16 +20,11 @@ private:
 
 public:
 	JOB();
-	JOB(string Name, string Data)
-	{
-		this->Name=Name;
-		this->Data=Data;
-	}
 
 	void JOB_plik(string plik); //otwieranie karty z pliku
-	string getJOB(int i);
-	int getSize(int i);
-	int sprawdzIO(int i);
+	string getJOB(int i);	//funkcja zwracajaca pierwsza linijke karty
+	int getSize(int i);		//funkcja zwracajaca pamiec
+	int sprawdzIO(int i);	//funkcja sprawdzajaca wystapienie odnosnikow in i out
 	string getData(int i); // funkcja zwracajaca dane z karty
 	string getName(int i); // funkcja zwracajaca nazwe
 	int nrlini = 0;
