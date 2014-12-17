@@ -79,6 +79,7 @@ vector <Bufor> Czyt::Czytaj(bool dr_nr, string com)
 					if (tmp[0] != "$JOB")
 					{
 						cout << "Nieprawidlowa karta";
+						bufor.push_back(Bufor());
 
 					}
 					else
