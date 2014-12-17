@@ -9,7 +9,6 @@ vector <Bufor> Czyt::Czytaj(bool dr_nr, string com)
 {
 	JOB job;
 	string buf;
-	int licznik = 0;
 	vector <string> tmp;
 	vector <Bufor> bufor;
 	if (dr_nr == 1)
