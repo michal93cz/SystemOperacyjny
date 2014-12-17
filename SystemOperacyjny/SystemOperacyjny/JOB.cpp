@@ -22,6 +22,7 @@ void JOB::JOB_plik(string plik)
 		cout << "Wczytywanie pliku do bufora.";
 		while(!bazadanych.eof()) //wczytywanie danych z karty do bufora
 		{
+			Buf.push_back(Bufor());
 			getline(bazadanych, buf);
 			Buf[nrlini].dane=buf;
 			getline(bazadanych, buf);
