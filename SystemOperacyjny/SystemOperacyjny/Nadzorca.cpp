@@ -134,6 +134,8 @@ void Nadzorca::Zal_JOB(int dr_nr){
 
 bool Nadzorca::Tworzenie_wczytywanie_dg(Pcb*wskaznik)
 {
+	if (wskaznik->getName() != RUNNING->getName()) 
+		wskaznik->uruchomienieProcesu("*IBSUP");
 	Interpreter interpreter;
 	Pcb*nowy;
 	string komunikat="READ";
