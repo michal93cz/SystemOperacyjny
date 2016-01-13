@@ -2,6 +2,7 @@
 
 
 int main(){
+	std::cout << "\nSymulacja Systemu Operacyjnego IBM 360" << std::endl;
 	Nadzorca*IPLRTN=new Nadzorca;
 	IPLRTN->INIT();
 	IPLRTN->CUSERPROG();
